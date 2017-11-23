@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>city.qml</file>
+        <file>warehouse.qml</file>
+        <file>line-distance.qml</file>
     </qresource>
 </RCC>
