@@ -56,6 +56,19 @@ ApplicationWindow {
         ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
+        drawingCanvas.requestPaint();
+
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.strokeStyle = "red"
+        ctx.fillStyle = "cyan"
+        ctx.moveTo(obj.x, obj.y);
+        ctx.arc(obj.x, obj.y, radius, 0, Math.PI * 2, false);
+        ctx.lineTo(obj.x, obj.y);
+        ctx.fill();
+
+        drawingCanvas.requestPaint();
+        ctx.globalAlpha = 1;
 
     }
 
