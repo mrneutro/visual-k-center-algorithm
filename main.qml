@@ -10,15 +10,79 @@ ApplicationWindow {
     width: 640
     height: 480
     title: qsTr("Hello World")
+
     property var cities: [];
+    property var distances: ({});
 
     function dist(w1, w2){
-        return Math.sqrt((w2.x-w1.x)^2 + (w2.y-w1.y)^2);
+        return Math.round(Math.sqrt((Math.pow(w2.x-w1.x,2) + Math.pow(w2.y-w1.y,2)))*100)/100;
     }
 
-    function drawDistance(x1,y1,x2,y2){
+    function drawLine(ctx, objFrom, objTo){
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "red"
+        ctx.beginPath()
+        ctx.moveTo(objFrom.x, objFrom.y)
+        ctx.lineTo(objTo.x, objTo.y)
+        ctx.closePath()
+        ctx.stroke()
+        drawingCanvas.requestPaint();
+    }
+
+    function drawCircle(ctx, obj, color){
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.moveTo(obj.x, obj.y);
+        ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
+        ctx.lineTo(obj.x, obj.y);
+        ctx.fill();
+    }
+
+    function writeLabel(ctx, objFrom, objTo, label){
+        var lblPos = {"x":0,"y":0};
+        lblPos.x = (objFrom.x + objTo.x)/2;
+        lblPos.y = (objFrom.y + objTo.y)/2;
+
+        ctx.fillStyle = "black";
+        ctx.font = "12px sans-serif";
+        ctx.fillText(label, lblPos.x, lblPos.y);
+        drawingCanvas.requestPaint();
+    }
+
+    function addCenter(ctx, obj, radius){
+        ctx.beginPath();
+        ctx.fillStyle = "blue";
+        ctx.moveTo(obj.x, obj.y);
+        ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
+        ctx.lineTo(obj.x, obj.y);
+        ctx.fill();
 
     }
+
+    function initAlgorithm(){
+        var ctx = drawingCanvas.getContext("2d")
+        //For all cities
+
+        var sel_city = Math.floor(Math.random() * cities.length);
+
+        var maxDist = 0;
+        var maxDistCity = sel_city;
+
+        for (var j = 0; j < cities.length; j++){
+            var distance = dist(cities[j], cities[sel_city]);
+            if(distance > maxDist){
+                maxDist = distance;
+                maxDistCity = j;
+            }
+        }
+        drawLine(ctx, cities[sel_city], cities[maxDistCity]);
+        addCenter(ctx, cities[sel_city], maxDist);
+        writeLabel(ctx, cities[sel_city], cities[maxDistCity], maxDist);
+
+    }
+
+
+
 
     toolBar:ToolBar {
         RowLayout {
@@ -41,19 +105,9 @@ ApplicationWindow {
                 text:"Start"
                 onClicked: {
                     console.log("start clicked")
-                    var component = Qt.createComponent("line-distance.qml");
-                    var object = component.createObject(canvasid);
+                    initAlgorithm();
 
-                    var ctx = drawingCanvas.getContext("2d")
-                    ctx.lineWidth = 3;
-                    ctx.strokeStyle = "red"
-                    ctx.beginPath()
-                    console.log("Citi 1"+ cities[0].x +" "+ cities[0].y)
-                    ctx.moveTo(Math.round(cities[0].x), Math.round(cities[0].y))
-                    ctx.lineTo(cities[1].x, cities[1].y)
-                    ctx.closePath()
-                    ctx.stroke()
-                    drawingCanvas.requestPaint();
+
                 }
             }
 
@@ -66,10 +120,13 @@ ApplicationWindow {
         }
     }
 
+
+
     Canvas {
         id: drawingCanvas
         anchors.fill: parent
         onPaint: {
+
 
         }
     }
@@ -78,12 +135,12 @@ ApplicationWindow {
         id: canvasid
         anchors.fill: parent
         onClicked: {
-            var component = Qt.createComponent("city.qml");
-            var object = component.createObject(parent);
-            object.y = mouseY;
-            object.x = mouseX;
-            cities.push(object);
+            var ctx = drawingCanvas.getContext("2d");
+            var obj = {"x":mouseX, "y":mouseY};
+            drawCircle(ctx, obj, "red");
+            drawingCanvas.requestPaint();
 
+            cities.push(obj);
         }
         Path {
             startX: 0; startY: 100
