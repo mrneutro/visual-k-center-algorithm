@@ -83,9 +83,11 @@ ApplicationWindow {
             drawCircle(ctx, cities[i],"red");
         }
 
-        for(var j=0; j<Object.keys(centers).length; j++){
-            console.log(centers[j]);
-            drawCircle(ctx, centers.valueOf(j),"blue");
+        console.log("key: " + JSON.stringify(centers));
+
+        for(var j in centers){
+            console.log("OBJ to draw:" + JSON.stringify(centers[j]));
+            drawCircle(ctx, centers[j],"blue");
         }
     }
 
