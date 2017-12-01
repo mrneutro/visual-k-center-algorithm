@@ -10,17 +10,14 @@ ApproxResolver::ApproxResolver(QList<City> cities, int center_count)
     std::srand(std::time(0)); // use current time as seed for random generator
 }
 
-bool ApproxResolver::resolve()
+QList<int> ApproxResolver::resolve_immediatly()
 {
-    int random_city_id = std::rand() % _cities.size();
-    qDebug() << "Random city is: " << random_city_id;
-    int current_city = random_city_id;
+    int current_city = std::rand() % _cities.size();
     while(_center_in_city.count() < _center_count && current_city != -1){ // if current_city is -1 we have no choises
         _center_in_city.append(current_city);
         current_city = fartherst_city_from(current_city);
     }
-
-    return true;
+    return _center_in_city;
 }
 
 int ApproxResolver::fartherst_city_from(int indx)
@@ -41,10 +38,5 @@ int ApproxResolver::fartherst_city_from(int indx)
 
 int ApproxResolver::dist(const City &c1, const City &c2)
 {
-    return round(sqrt((pow(c2.x()-c1.x(),2) + pow(c2.y()-c1.y(),2)))*100)/100;
-}
-
-QList<int> ApproxResolver::get_solution()
-{
-    return _center_in_city;
+    return sqrt((pow(c2.x()-c1.x(),2) + pow(c2.y()-c1.y(),2)));
 }

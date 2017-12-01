@@ -1,15 +1,17 @@
 #ifndef APPROXRESOLVER_H
 #define APPROXRESOLVER_H
-#include <QHash>
 #include <City.h>
 #include <Center.h>
+#include <QList>
 
 class ApproxResolver
 {
 public:
     ApproxResolver(QList<City> cities, int center_count);
-    bool resolve();
-    QList<int> get_solution();
+    //immediate solution
+    QList<int> resolve_immediatly();
+
+    //
 private:
     QList<City> _cities;
     QList<int> _center_in_city;

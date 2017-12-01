@@ -2,25 +2,34 @@
 #include <QQmlApplicationEngine>
 #include <ApproxResolver.h>
 #include <QDebug>
+#include <ctime>
 
+#include <ApproxFacade.h>
+#define POWER 1000000
 int main(int argc, char *argv[])
 {
-//    QGuiApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
-//    QQmlApplicationEngine engine;
-//    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-//    if (engine.rootObjects().isEmpty())
-//        return -1;
+    QQmlApplicationEngine engine;
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
+//    std::srand(std::time(0));
 
-    City c1(12,123);
-    City c2(323,3323);
-    City c3(34,35);
-    QList<City> lst;
-    lst << c1 << c2 << c3;
+//    QList<City> lst;
+//    for(int i = 0; i < POWER; i++){
+//        lst.append(City(std::rand() % POWER*10, std::rand() % POWER*10));
+//    }
 
-    ApproxResolver apr(lst, 2);
-    apr.resolve();
-    qDebug() << apr.get_solution();
 
-    return 0;
+
+    ApproxFacade approxFacade();
+
+    engine.rootContext()->setContextProperty("approxFacade", &approxFacade);
+//    qDebug() << list;
+
+//    qDebug() << "finish";
+//    qDebug() << lst.at(999998).x() << " " << lst.at(999998).y();
+
+    return app.exec();
 }
