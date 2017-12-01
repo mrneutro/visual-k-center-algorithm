@@ -147,17 +147,20 @@ ApplicationWindow {
 
         restoreCanvas();
 
-        if((sel_city != -1) && (c_length < k_centers.text)){
+        if((sel_city != -1) && (Object.keys(centers).length <= k_centers.text)){
             sel_city = findFarthest(ctx, sel_city);
-            c_length++;
+            return true;
         }else{
             stepBtn.visible = false;
             finishBtn.visible = false;
+            return false;
         }
     }
 
     function finishAll(){
-
+        while(stepOver()){
+            console.log("AAAA");
+        }
     }
 
 

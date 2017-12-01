@@ -1,14 +1,25 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <ApproxResolver.h>
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+//    QGuiApplication app(argc, argv);
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
-        return -1;
+//    QQmlApplicationEngine engine;
+//    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+//    if (engine.rootObjects().isEmpty())
+//        return -1;
 
-    return app.exec();
+    City c1(12,123);
+    City c2(323,3323);
+    City c3(34,35);
+    QList<City> lst;
+    lst << c1 << c2 << c3;
+
+    ApproxResolver apr(lst, 2);
+    apr.resolve();
+
+
+    return 0;
 }
