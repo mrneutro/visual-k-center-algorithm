@@ -16,8 +16,8 @@ bool ApproxResolver::resolve()
     qDebug() << "Random city is: " << random_city_id;
     int current_city = random_city_id;
     while(_center_in_city.count() < _center_count && current_city != -1){ // if current_city is -1 we have no choises
-        _center_in_city.append(random_city_id);
-        current_city = fartherst_city_from(random_city_id);
+        _center_in_city.append(current_city);
+        current_city = fartherst_city_from(current_city);
     }
 
     return true;
@@ -31,7 +31,7 @@ int ApproxResolver::fartherst_city_from(int indx)
         if(!_center_in_city.contains(i)){
             int distance = dist(_cities.at(indx), _cities.at(i));
             if(distance > max_distance){
-                max_distance_cid = j;
+                max_distance_cid = i;
             }
         }
     }
@@ -42,4 +42,9 @@ int ApproxResolver::fartherst_city_from(int indx)
 int ApproxResolver::dist(const City &c1, const City &c2)
 {
     return round(sqrt((pow(c2.x()-c1.x(),2) + pow(c2.y()-c1.y(),2)))*100)/100;
+}
+
+QList<int> ApproxResolver::get_solution()
+{
+    return _center_in_city;
 }

@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <ApproxResolver.h>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
 
     ApproxResolver apr(lst, 2);
     apr.resolve();
-
+    qDebug() << apr.get_solution();
 
     return 0;
 }
