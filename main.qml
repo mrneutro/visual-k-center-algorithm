@@ -7,8 +7,8 @@ import QtQuick.Controls.Styles 1.4
 
 ApplicationWindow {
     visible: true
-    width: 1280
-    height: 756
+    width: 400
+    height: 400
     title: qsTr("Hello World")
 
     property var cities: [];
@@ -60,7 +60,9 @@ ApplicationWindow {
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
         drawingCanvas.requestPaint();
+    }
 
+    function addRadius(ctx, obj, radius){
         ctx.globalAlpha = 0.4;
         ctx.beginPath();
         ctx.lineWidth = 1;
@@ -74,7 +76,6 @@ ApplicationWindow {
 
         drawingCanvas.requestPaint();
         ctx.globalAlpha = 1;
-
     }
 
     function restoreCanvas(){
@@ -92,7 +93,7 @@ ApplicationWindow {
     }
 
     function findFarthest(ctx, sel_city){
-        var maxDistCity = sel_city;
+        var maxDistCity = -1;
         var maxDist = 0;
         console.log("Citta selezionati " + centers.toString());
         for (var j = 0; j < cities.length; j++){
@@ -109,13 +110,23 @@ ApplicationWindow {
                 maxDistCity = j;
             }
         }
-        console.log("Aggiungo nella lista: " + maxDistCity);
 
-        centers[maxDistCity]={"x":cities[maxDistCity].x, "y":cities[maxDistCity].y};
+        if(maxDistCity != -1){
+            console.log("Aggiungo nella lista: " + maxDistCity);
 
-        drawLine(ctx, cities[sel_city], cities[maxDistCity]);
-        addCenter(ctx, cities[sel_city], maxDist);
-        writeLabel(ctx, cities[sel_city], cities[maxDistCity], maxDist);
+            centers[maxDistCity]={"x":cities[maxDistCity].x, "y":cities[maxDistCity].y};
+
+            console.log("KC"+ k_centers.text + " KL:"+ Object.keys(centers).length)
+
+            if(Object.keys(centers).length == k_centers.text){
+                addRadius(ctx, cities[sel_city], maxDist)
+                drawLine(ctx, cities[sel_city], cities[maxDistCity]);
+                writeLabel(ctx, cities[sel_city], cities[maxDistCity], maxDist);
+            }
+            addCenter(ctx, cities[sel_city], maxDist);
+
+        }
+
         return maxDistCity;
     }
 
@@ -136,7 +147,7 @@ ApplicationWindow {
 
         restoreCanvas();
 
-        if(c_length < k_centers.text){
+        if((sel_city != -1) && (c_length < k_centers.text)){
             sel_city = findFarthest(ctx, sel_city);
             c_length++;
         }else{
