@@ -7,12 +7,15 @@ import QtQuick.Controls.Styles 1.4
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
+    width: 1280
+    height: 756
     title: qsTr("Hello World")
 
     property var cities: [];
     property var distances: ({});
+    property var centers: ({});
+    property var c_length: 0;
+    property var sel_city: 0;
 
     function dist(w1, w2){
         return Math.round(Math.sqrt((Math.pow(w2.x-w1.x,2) + Math.pow(w2.y-w1.y,2)))*100)/100;
@@ -58,10 +61,12 @@ ApplicationWindow {
         ctx.fill();
         drawingCanvas.requestPaint();
 
-        ctx.globalAlpha = 0.5;
+        ctx.globalAlpha = 0.4;
         ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeColor = "red"
         ctx.strokeStyle = "red"
-        ctx.fillStyle = "cyan"
+        ctx.fillStyle = "#3399ff"
         ctx.moveTo(obj.x, obj.y);
         ctx.arc(obj.x, obj.y, radius, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
@@ -72,25 +77,73 @@ ApplicationWindow {
 
     }
 
-    function initAlgorithm(){
-        var ctx = drawingCanvas.getContext("2d")
-        //For all cities
+    function restoreCanvas(){
+        var ctx = drawingCanvas.getContext("2d");
+        for(var i=0; i<cities.length; i++){
+            drawCircle(ctx, cities[i],"red");
+        }
 
-        var sel_city = Math.floor(Math.random() * cities.length);
+        for(var j=0; j<Object.keys(centers).length; j++){
+            console.log(centers[j]);
+            drawCircle(ctx, centers.valueOf(j),"blue");
+        }
+    }
 
-        var maxDist = 0;
+    function findFarthest(ctx, sel_city){
         var maxDistCity = sel_city;
-
+        var maxDist = 0;
+        console.log("Citta selezionati " + centers.toString());
         for (var j = 0; j < cities.length; j++){
+            if(j in centers){
+                console.log("Citta gia presente:" + j);
+                continue;
+            }
+
             var distance = dist(cities[j], cities[sel_city]);
+            console.log("Distanza: " + distance);
             if(distance > maxDist){
+                console.log("Aggiornamento citta piu lontana: " + j);
                 maxDist = distance;
                 maxDistCity = j;
             }
         }
+        console.log("Aggiungo nella lista: " + maxDistCity);
+
+        centers[maxDistCity]={"x":cities[maxDistCity].x, "y":cities[maxDistCity].y};
+
         drawLine(ctx, cities[sel_city], cities[maxDistCity]);
         addCenter(ctx, cities[sel_city], maxDist);
         writeLabel(ctx, cities[sel_city], cities[maxDistCity], maxDist);
+        return maxDistCity;
+    }
+
+    function initAlgorithm(){
+        var ctx = drawingCanvas.getContext("2d")
+        sel_city = Math.floor(Math.random() * cities.length);
+        centers[sel_city] = {"x":cities[sel_city].x, "y":cities[sel_city].y};
+        console.log("Citta a caso:" + sel_city);
+        sel_city = findFarthest(ctx, sel_city);
+        c_length = 1;
+    }
+
+    function stepOver(){
+        var ctx = drawingCanvas.getContext("2d");
+        ctx.beginPath();
+        ctx.fillStyle = "white";
+        ctx.fillRect(0,0,drawingCanvas.width, drawingCanvas.height);
+
+        restoreCanvas();
+
+        if(c_length < k_centers.text){
+            sel_city = findFarthest(ctx, sel_city);
+            c_length++;
+        }else{
+            stepBtn.visible = false;
+            finishBtn.visible = false;
+        }
+    }
+
+    function finishAll(){
 
     }
 
@@ -101,6 +154,7 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent
             TextField {
+                id: k_centers
                 style: TextFieldStyle {
                     textColor: "black"
                     background: Rectangle {
@@ -111,16 +165,39 @@ ApplicationWindow {
                         border.width: 1
                     }
                 }
-                text: "0"
+                text: "2"
             }
 
             ToolButton {
-                text:"Start"
+                id: startBtn
+                text: "Start"
+                onClicked: {
+                    initAlgorithm();
+                    startBtn.visible = false;
+                    stepBtn.visible = true;
+                    k_centers.enabled = false;
+                    finishBtn.visible = true;
+                }
+            }
+
+            ToolButton {
+                id: stepBtn
+                visible: false
+                text: ">>>"
                 onClicked: {
                     console.log("start clicked")
-                    initAlgorithm();
+                    stepOver();
 
 
+                }
+            }
+
+            ToolButton {
+                id: finishBtn
+                visible: false;
+                text: "Finish"
+                onClicked: {
+                    finishAll();
                 }
             }
 
@@ -138,6 +215,14 @@ ApplicationWindow {
     Canvas {
         id: drawingCanvas
         anchors.fill: parent
+        Component.onCompleted: {
+            var ctx = drawingCanvas.getContext("2d");
+            ctx.beginPath();
+            ctx.fillStyle = "white";
+            ctx.fill();
+            drawingCanvas.requestPaint();
+        }
+
         onPaint: {
 
 
