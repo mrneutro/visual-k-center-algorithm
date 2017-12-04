@@ -6,9 +6,10 @@ import QtQuick.Controls.Styles 1.4
 
 
 ApplicationWindow {
+    id: window
     visible: true
-    width: 400
-    height: 400
+    width: 600
+    height: 600
     title: qsTr("Hello World")
 
     Component.onCompleted: {
@@ -48,9 +49,9 @@ ApplicationWindow {
         drawingCanvas.requestPaint();
     }
 
-    function addCenter(ctx, obj, radius){
+    function addCenter(ctx, obj, color){
         ctx.beginPath();
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = color;
         ctx.moveTo(obj.x, obj.y);
         ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
@@ -115,13 +116,23 @@ ApplicationWindow {
                     stepBtn.visible = true;
                     k_centers.enabled = false;
                     finishBtn.visible = true;
-                    var centers = approxFacade.resolveImmediate();
-                    console.log(centers);
+                    approxFacade.resolveImmediate();
+
 
                     var ctx = drawingCanvas.getContext("2d");
 
-                    for (var j in centers){
-                        addCenter(ctx, cities[j], 6);
+                    var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
+                    var r1 = approxFacade.getR(0);
+                    addCenter(ctx, c1, "green");
+
+                    for(var i = 1; i < k_centers.text; i++){
+                        console.log("RADIUS is " + approxFacade.getR(i))
+                        var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
+                        var r = approxFacade.getR(i);
+                        addCenter(ctx, c, "blue");
+                        if(k_centers.text-1 != i){
+                            addRadius(ctx, c, r);
+                        }
                     }
 
                     drawingCanvas.requestPaint();
@@ -149,6 +160,24 @@ ApplicationWindow {
                 }
             }
 
+            ToolButton {
+                visible: true;
+                text: "RAND"
+                onClicked: {
+                    var width = window.width;
+                    var height = window.height;
+                    console.log(width);
+                    console.log(height);
+                    var ctx = drawingCanvas.getContext("2d");
+                    for(var i=0; i< 1500; i++){
+                        var obj = {"x":Math.floor((Math.random() * (width-10)))+10, "y":Math.floor((Math.random() * (height-10)))+10};
+                        approxFacade.setCity(obj.x, obj.y);
+                        drawCircle(ctx, obj, "red");
+                    }
+                    drawingCanvas.requestPaint();
+                }
+            }
+
             Item { Layout.fillWidth: true }
             CheckBox {
                 text: "Enabled"
@@ -166,7 +195,6 @@ ApplicationWindow {
 
         onPaint: {
 
-
         }
     }
 
@@ -175,13 +203,13 @@ ApplicationWindow {
         anchors.fill: parent
         onClicked: {
             var ctx = drawingCanvas.getContext("2d");
-            var obj = {"x":mouseX, "y":mouseY};
+            var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
             drawCircle(ctx, obj, "red");
             drawingCanvas.requestPaint();
 
             cities.push(obj);
             console.log(approxFacade);
-            approxFacade.setCity(mouseX,mouseY);
+            approxFacade.setCity(Math.round(mouseX), Math.round(mouseY));
         }
         Path {
             startX: 0; startY: 100

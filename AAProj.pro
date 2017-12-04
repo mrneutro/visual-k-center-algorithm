@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     ApproxResolver.cpp \
     City.cpp \
     Center.cpp \
-    ApproxFacade.cpp
+    ApproxFacade.cpp \
+    Warehouse.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,4 +36,5 @@ HEADERS += \
     ApproxResolver.h \
     City.h \
     Center.h \
-    ApproxFacade.h
+    ApproxFacade.h \
+    Warehouse.h

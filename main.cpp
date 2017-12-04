@@ -7,6 +7,7 @@
 #include <QQmlContext>
 
 #include <ApproxFacade.h>
+#include <Warehouse.h>
 #define POWER 1000000
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     ApproxFacade *approxFacade = new ApproxFacade();
     qmlRegisterType<ApproxFacade>();
+    qmlRegisterType<Warehouse>();
     engine.rootContext()->setContextProperty("approxFacade", approxFacade);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
