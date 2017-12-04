@@ -14,7 +14,7 @@ public:
     Q_INVOKABLE void init();
     Q_INVOKABLE void setCity(int x, int y);
     Q_INVOKABLE void setCenterCount(int k);
-    Q_INVOKABLE void resolveImmediate();
+    Q_INVOKABLE QList<int> resolveImmediate();
 private:
     ApproxResolver *_resolver = nullptr;
     QList<City> _cities;

@@ -11,15 +11,11 @@ ApplicationWindow {
     height: 400
     title: qsTr("Hello World")
 
-    property var cities: [];
-    property var distances: ({});
-    property var centers: ({});
-    property var c_length: 0;
-    property var sel_city: 0;
-
-    function dist(w1, w2){
-        return Math.round(Math.sqrt((Math.pow(w2.x-w1.x,2) + Math.pow(w2.y-w1.y,2)))*100)/100;
+    Component.onCompleted: {
+        approxFacade.init();
     }
+
+    property var cities: [];
 
     function drawLine(ctx, objFrom, objTo){
         ctx.lineWidth = 1;
@@ -92,80 +88,6 @@ ApplicationWindow {
         }
     }
 
-    function findFarthest(ctx, sel_city){
-        var maxDistCity = -1;
-        var maxDist = 0;
-        console.log("Citta selezionati " + centers.toString());
-        for (var j = 0; j < cities.length; j++){
-            if(j in centers){
-                console.log("Citta gia presente:" + j);
-                continue;
-            }
-
-            var distance = dist(cities[j], cities[sel_city]);
-            console.log("Distanza: " + distance);
-            if(distance > maxDist){
-                console.log("Aggiornamento citta piu lontana: " + j);
-                maxDist = distance;
-                maxDistCity = j;
-            }
-        }
-
-        if(maxDistCity != -1){
-            console.log("Aggiungo nella lista: " + maxDistCity);
-
-            centers[maxDistCity]={"x":cities[maxDistCity].x, "y":cities[maxDistCity].y};
-
-            console.log("KC"+ k_centers.text + " KL:"+ Object.keys(centers).length)
-
-            if(Object.keys(centers).length == k_centers.text){
-                addRadius(ctx, cities[sel_city], maxDist)
-                drawLine(ctx, cities[sel_city], cities[maxDistCity]);
-                writeLabel(ctx, cities[sel_city], cities[maxDistCity], maxDist);
-            }
-            addCenter(ctx, cities[sel_city], maxDist);
-
-        }
-
-        return maxDistCity;
-    }
-
-    function initAlgorithm(){
-        var ctx = drawingCanvas.getContext("2d")
-        sel_city = Math.floor(Math.random() * cities.length);
-        centers[sel_city] = {"x":cities[sel_city].x, "y":cities[sel_city].y};
-        console.log("Citta a caso:" + sel_city);
-        sel_city = findFarthest(ctx, sel_city);
-        c_length = 1;
-    }
-
-    function stepOver(){
-        var ctx = drawingCanvas.getContext("2d");
-        ctx.beginPath();
-        ctx.fillStyle = "white";
-        ctx.fillRect(0,0,drawingCanvas.width, drawingCanvas.height);
-
-        restoreCanvas();
-
-        if((sel_city != -1) && (Object.keys(centers).length <= k_centers.text)){
-            sel_city = findFarthest(ctx, sel_city);
-            return true;
-        }else{
-            stepBtn.visible = false;
-            finishBtn.visible = false;
-            return false;
-        }
-    }
-
-    function finishAll(){
-        while(stepOver()){
-            console.log("AAAA");
-        }
-    }
-
-
-
-
     toolBar:ToolBar {
         RowLayout {
             anchors.fill: parent
@@ -188,11 +110,21 @@ ApplicationWindow {
                 id: startBtn
                 text: "Start"
                 onClicked: {
-                    initAlgorithm();
+                    approxFacade.setCenterCount(k_centers.text);
                     startBtn.visible = false;
                     stepBtn.visible = true;
                     k_centers.enabled = false;
                     finishBtn.visible = true;
+                    var centers = approxFacade.resolveImmediate();
+                    console.log(centers);
+
+                    var ctx = drawingCanvas.getContext("2d");
+
+                    for (var j in centers){
+                        addCenter(ctx, cities[j], 6);
+                    }
+
+                    drawingCanvas.requestPaint();
                 }
             }
 
@@ -231,13 +163,6 @@ ApplicationWindow {
     Canvas {
         id: drawingCanvas
         anchors.fill: parent
-        Component.onCompleted: {
-            var ctx = drawingCanvas.getContext("2d");
-            ctx.beginPath();
-            ctx.fillStyle = "white";
-            ctx.fill();
-            drawingCanvas.requestPaint();
-        }
 
         onPaint: {
 
@@ -255,6 +180,8 @@ ApplicationWindow {
             drawingCanvas.requestPaint();
 
             cities.push(obj);
+            console.log(approxFacade);
+            approxFacade.setCity(mouseX,mouseY);
         }
         Path {
             startX: 0; startY: 100

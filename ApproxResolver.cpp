@@ -17,6 +17,8 @@ QList<int> ApproxResolver::resolve_immediatly()
         _center_in_city.append(current_city);
         current_city = fartherst_city_from(current_city);
     }
+
+    qDebug() << _center_in_city;
     return _center_in_city;
 }
 
@@ -26,6 +28,8 @@ int ApproxResolver::fartherst_city_from(int indx)
     int max_distance_cid = -1; // its not a valid city id
     for(int i = 0; i < _cities.length(); i++){
         if(!_center_in_city.contains(i)){
+            auto c = _cities.at(indx);
+            auto c2 = _cities.at(i);
             int distance = dist(_cities.at(indx), _cities.at(i));
             if(distance > max_distance){
                 max_distance_cid = i;

@@ -1,8 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QtQml>
 #include <ApproxResolver.h>
 #include <QDebug>
 #include <ctime>
+#include <QQmlContext>
 
 #include <ApproxFacade.h>
 #define POWER 1000000
@@ -11,7 +13,12 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    ApproxFacade *approxFacade = new ApproxFacade();
+    qmlRegisterType<ApproxFacade>();
+    engine.rootContext()->setContextProperty("approxFacade", approxFacade);
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
     if (engine.rootObjects().isEmpty())
         return -1;
 //    std::srand(std::time(0));
@@ -23,9 +30,6 @@ int main(int argc, char *argv[])
 
 
 
-    ApproxFacade approxFacade();
-
-    engine.rootContext()->setContextProperty("approxFacade", &approxFacade);
 //    qDebug() << list;
 
 //    qDebug() << "finish";
