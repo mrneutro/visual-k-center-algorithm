@@ -10,44 +10,63 @@ ApproxResolver::ApproxResolver(QList<City> cities, int center_count)
     std::srand(std::time(0)); // use current time as seed for random generator
 }
 
-QList<Warehouse*> ApproxResolver::resolve_immediatly()
+QList<Warehouse *> ApproxResolver::resolve_immediatly()
 {
-    QList<Warehouse*> wh;
+
     int current_city = std::rand() % _cities.size();
-    int prev_city = current_city;
-    while(_center_in_city.count() < _center_count && current_city != -1){ // if current_city is -1 we have no choises
-        _center_in_city.append(current_city);
-        current_city = fartherst_city_from(current_city);
-        auto prev_city_obj = _cities.at(prev_city);
-        Warehouse *w = new Warehouse(prev_city_obj.x(), prev_city_obj.y(), radius);
-        wh.append(w);
-        prev_city=current_city;
+
+    while(_wh_map.count() < _center_count && current_city != -1){ // if current_city is -1 we have no choises
+        City c = _cities.at(current_city);
+        Warehouse *wh = new Warehouse(c.x(), c.y(), 0);
+        //qDebug() << "KEY si" << gen_wh_key(wh);
+        _wh_map.insert(gen_wh_key(wh), wh);
+        current_city = fartherst_city_from_centers();
     }
 
-    qDebug() << _center_in_city;
+    QList<Warehouse*> lst;
+    QHashIterator<QString, Warehouse*> i(_wh_map);
+    while (i.hasNext()) {
+        i.next();
+        lst.append(i.value());
+    }
 
-    return wh;
+    return lst;
 }
 
-int ApproxResolver::fartherst_city_from(int indx)
+int ApproxResolver::fartherst_city_from_centers()
 {
     int max_distance = 0;
     int max_distance_cid = -1; // its not a valid city id
-    for(int i = 0; i < _cities.length(); i++){
-        if(!_center_in_city.contains(i)){
-            int distance = dist(_cities.at(indx), _cities.at(i));
-            if(distance > max_distance){
-                max_distance_cid = i;
-                max_distance = distance;
+    QHashIterator<QString, Warehouse*> i(_wh_map);
+    while (i.hasNext()) {
+        i.next();
+        Warehouse *curr_wh = i.value();
+
+        for(int city_id = 0; city_id < _cities.length(); city_id++){
+            City curr_city = _cities.at(city_id);
+
+            if(!_wh_map.contains(curr_city.x()+"-"+curr_city.y())){
+                int distance = dist(curr_city, curr_wh);
+                if(distance > max_distance){
+                    max_distance_cid = city_id;
+                    max_distance = distance;
+                }
             }
         }
     }
+
     radius = max_distance;
 
     return max_distance_cid;
 }
 
-int ApproxResolver::dist(const City &c1, const City &c2)
+int ApproxResolver::dist(const City &c1, const Warehouse* c2)
 {
-    return sqrt((pow(c2.x()-c1.x(),2) + pow(c2.y()-c1.y(),2)));
+    return sqrt((pow(c2->x()-c1.x(),2) + pow(c2->y()-c1.y(),2)));
 }
+
+QString ApproxResolver::gen_wh_key(const Warehouse* wh)
+{
+    return QString::number(wh->x())+"-"+QString::number(wh->y());
+}
+

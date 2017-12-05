@@ -4,6 +4,7 @@
 #include <Center.h>
 #include <QList>
 #include "Warehouse.h"
+#include <QHash>
 
 class ApproxResolver
 {
@@ -15,11 +16,12 @@ public:
     //
 private:
     QList<City> _cities;
-    QList<int> _center_in_city;
+    QHash<QString, Warehouse*> _wh_map;
     int _center_count = 0;
-    int fartherst_city_from(int indx);
-    int dist(const City& c1, const City& c2);
+    int fartherst_city_from_centers();
+    int dist(const City& c1, const Warehouse* c2);
     int radius = 0;
+    QString gen_wh_key(const Warehouse* wh);
 };
 
 #endif // APPROXRESOLVER_H

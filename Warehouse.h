@@ -8,6 +8,7 @@ class Warehouse : public QObject
     Q_OBJECT
 public:
     explicit Warehouse(QObject *parent = nullptr);
+    Warehouse(const Warehouse& wh);
     Warehouse(int x, int y, int radius);
 
     Q_INVOKABLE int x() const;

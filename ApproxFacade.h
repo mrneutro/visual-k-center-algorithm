@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <Warehouse.h>
+#include <QHash>
 
 class ApproxFacade : public QObject
 {

@@ -131,7 +131,7 @@ ApplicationWindow {
                         var r = approxFacade.getR(i);
                         addCenter(ctx, c, "blue");
                         if(k_centers.text-1 != i){
-                            addRadius(ctx, c, r);
+                            //addRadius(ctx, c, r);
                         }
                     }
 
@@ -164,13 +164,13 @@ ApplicationWindow {
                 visible: true;
                 text: "RAND"
                 onClicked: {
-                    var width = window.width;
-                    var height = window.height;
+                    var width = drawingCanvas.width;
+                    var height = drawingCanvas.height;
                     console.log(width);
                     console.log(height);
                     var ctx = drawingCanvas.getContext("2d");
-                    for(var i=0; i< 1500; i++){
-                        var obj = {"x":Math.floor((Math.random() * (width-10)))+10, "y":Math.floor((Math.random() * (height-10)))+10};
+                    for(var i=0; i< 100; i++){
+                        var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}
                         approxFacade.setCity(obj.x, obj.y);
                         drawCircle(ctx, obj, "red");
                     }

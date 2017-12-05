@@ -5,6 +5,13 @@ Warehouse::Warehouse(QObject *parent) : QObject(parent)
 
 }
 
+Warehouse::Warehouse(const Warehouse &wh)
+{
+    _x = wh.x();
+    _y = wh.y();
+    _radius = wh.radius();
+}
+
 Warehouse::Warehouse(int x, int y, int radius)
 {
     _x = x;
