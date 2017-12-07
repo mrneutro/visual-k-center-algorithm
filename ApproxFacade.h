@@ -26,7 +26,8 @@ private:
     int _center_count = 0;
     QList<Warehouse*> _solution;
 signals:
-
+    void dataAvailable();
+    void progressUpdate(int val);
 public slots:
 };
 

@@ -1,14 +1,17 @@
 #ifndef APPROXRESOLVER_H
 #define APPROXRESOLVER_H
+#include <QObject>
 #include <City.h>
 #include <QList>
 #include "Warehouse.h"
 #include <QHash>
 #include "NearestCenter.h"
 
-class ApproxResolver
+class ApproxResolver: public QObject
 {
+    Q_OBJECT
 public:
+    explicit ApproxResolver(QObject *parent = nullptr);
     ApproxResolver(QList<City *> cities, int center_count);
     //immediate solution
     QList<Warehouse *> resolve_immediatly();
@@ -23,6 +26,8 @@ private:
     NearestCenter* nearest_wh_from(const City *c);
     int radius = 0;
     City* get_random_city();
+signals:
+    void progressUpdate(int val);
 };
 
 #endif // APPROXRESOLVER_H

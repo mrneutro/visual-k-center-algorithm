@@ -1,4 +1,4 @@
-QT += quick
+QT += quick concurrent
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     City.cpp \
     ApproxFacade.cpp \
     Warehouse.cpp \
-    NearestCenter.cpp
+    NearestCenter.cpp \
+    Resolver.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,4 +38,5 @@ HEADERS += \
     City.h \
     ApproxFacade.h \
     Warehouse.h \
-    NearestCenter.h
+    NearestCenter.h \
+    Resolver.h

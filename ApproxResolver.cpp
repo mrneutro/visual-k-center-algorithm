@@ -4,6 +4,11 @@
 #include <QDebug>
 
 
+ApproxResolver::ApproxResolver(QObject *parent) : QObject(parent)
+{
+
+}
+
 ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 {
     _cities = cities;
@@ -15,7 +20,7 @@ QList<Warehouse *> ApproxResolver::resolve_immediatly()
 {
     City *current_city = get_random_city();
     while(_wh.count() < _center_count && current_city != nullptr){ // if current_city is -1 we have no choises
-        qDebug() << "Current city is " << current_city->x() << " " << current_city->y();
+        emit progressUpdate(_wh.count());
         Warehouse *wh = new Warehouse(current_city->x(), current_city->y(), 0);
         current_city->setWh(wh);
 
@@ -28,9 +33,10 @@ QList<Warehouse *> ApproxResolver::resolve_immediatly()
 
 City* ApproxResolver::fartherst_city_from_centers()
 {
+#ifdef DEBUG
     qDebug() << "fartherst_city_from_centers";
     qDebug() << "Wh count " << _wh.size();
-
+#endif
     NearestCenter* more_distanced_city = nullptr;
     for(int city_id = 0; city_id < _cities.length(); city_id++){
         City* curr_city = _cities.at(city_id);
@@ -73,7 +79,9 @@ NearestCenter* ApproxResolver::nearest_wh_from(const City* c)
 City *ApproxResolver::get_random_city()
 {
     int current_city = std::rand() % _cities.size();
+#ifdef _DEBUG
     qDebug() << "Random city is" << current_city;
+#endif
     return _cities.at(current_city);
 }
 

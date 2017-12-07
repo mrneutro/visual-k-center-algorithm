@@ -1,5 +1,7 @@
 #include "ApproxFacade.h"
 #include <QDebug>
+#include <QtConcurrent>
+
 ApproxFacade::ApproxFacade(QObject *parent) : QObject(parent)
 {
 
@@ -13,7 +15,7 @@ void ApproxFacade::init()
 void ApproxFacade::setCity(int x, int y)
 {
     City* c = new City(x,y);
-    qDebug() << "New city is: " << x << " " << y;
+    //qDebug() << "New city is: " << x << " " << y;
     _cities.append(c);
 }
 
@@ -24,13 +26,17 @@ void ApproxFacade::setCenterCount(int k)
 
 void ApproxFacade::resolveImmediate()
 {
-    if(_resolver != nullptr)
-        delete _resolver;
+    QtConcurrent::run([this] {
+        if(this->_resolver != nullptr)
+            delete this->_resolver;
+        _solution.clear();
 
-    _solution.clear();
-
-    _resolver = new ApproxResolver(_cities, _center_count);
-    _solution = _resolver->resolve_immediatly();
+        this->_resolver = new ApproxResolver(this->_cities, this->_center_count);
+        connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
+        this->_solution = this->_resolver->resolve_immediatly();
+        emit dataAvailable();
+        disconnect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
+    });
 }
 
 int ApproxFacade::getX(int item)
