@@ -12,7 +12,7 @@ void ApproxFacade::init()
 
 void ApproxFacade::setCity(int x, int y)
 {
-    City c(x,y);
+    City* c = new City(x,y);
     qDebug() << "New city is: " << x << " " << y;
     _cities.append(c);
 }

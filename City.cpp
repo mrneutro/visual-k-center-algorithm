@@ -15,3 +15,13 @@ int City::y() const
 {
     return _y;
 }
+
+Warehouse *City::wh() const
+{
+    return _wh;
+}
+
+void City::setWh(Warehouse *wh)
+{
+    _wh = wh;
+}

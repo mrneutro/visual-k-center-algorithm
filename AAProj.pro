@@ -15,9 +15,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     ApproxResolver.cpp \
     City.cpp \
-    Center.cpp \
     ApproxFacade.cpp \
-    Warehouse.cpp
+    Warehouse.cpp \
+    NearestCenter.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,6 +35,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ApproxResolver.h \
     City.h \
-    Center.h \
     ApproxFacade.h \
-    Warehouse.h
+    Warehouse.h \
+    NearestCenter.h

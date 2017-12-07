@@ -1,6 +1,6 @@
 #ifndef CITY_H
 #define CITY_H
-
+#include "Warehouse.h"
 
 class City
 {
@@ -11,9 +11,14 @@ public:
 
     int y() const;
 
+    Warehouse *wh() const;
+    void setWh(Warehouse *wh);
+
 private:
     int _x;
     int _y;
+    Warehouse* _wh = nullptr;
+
 };
 
 #endif // CITY_H

@@ -3,7 +3,8 @@
 #include <ctime>
 #include <QDebug>
 
-ApproxResolver::ApproxResolver(QList<City> cities, int center_count)
+
+ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 {
     _cities = cities;
     _center_count = center_count;
@@ -12,61 +13,67 @@ ApproxResolver::ApproxResolver(QList<City> cities, int center_count)
 
 QList<Warehouse *> ApproxResolver::resolve_immediatly()
 {
+    City *current_city = get_random_city();
+    while(_wh.count() < _center_count && current_city != nullptr){ // if current_city is -1 we have no choises
+        qDebug() << "Current city is " << current_city->x() << " " << current_city->y();
+        Warehouse *wh = new Warehouse(current_city->x(), current_city->y(), 0);
+        current_city->setWh(wh);
 
-    int current_city = std::rand() % _cities.size();
-
-    while(_wh_map.count() < _center_count && current_city != -1){ // if current_city is -1 we have no choises
-        City c = _cities.at(current_city);
-        Warehouse *wh = new Warehouse(c.x(), c.y(), 0);
-        //qDebug() << "KEY si" << gen_wh_key(wh);
-        _wh_map.insert(gen_wh_key(wh), wh);
+        _wh.append(wh);
         current_city = fartherst_city_from_centers();
     }
 
-    QList<Warehouse*> lst;
-    QHashIterator<QString, Warehouse*> i(_wh_map);
-    while (i.hasNext()) {
-        i.next();
-        lst.append(i.value());
-    }
-
-    return lst;
+    return _wh;
 }
 
-int ApproxResolver::fartherst_city_from_centers()
+City* ApproxResolver::fartherst_city_from_centers()
 {
-    int max_distance = 0;
-    int max_distance_cid = -1; // its not a valid city id
-    QHashIterator<QString, Warehouse*> i(_wh_map);
-    while (i.hasNext()) {
-        i.next();
-        Warehouse *curr_wh = i.value();
+    qDebug() << "fartherst_city_from_centers";
+    qDebug() << "Wh count " << _wh.size();
 
-        for(int city_id = 0; city_id < _cities.length(); city_id++){
-            City curr_city = _cities.at(city_id);
-
-            if(!_wh_map.contains(curr_city.x()+"-"+curr_city.y())){
-                int distance = dist(curr_city, curr_wh);
-                if(distance > max_distance){
-                    max_distance_cid = city_id;
-                    max_distance = distance;
-                }
+    NearestCenter* more_distanced_city = nullptr;
+    for(int city_id = 0; city_id < _cities.length(); city_id++){
+        City* curr_city = _cities.at(city_id);
+        NearestCenter* nc = nearest_wh_from(curr_city);
+        if(more_distanced_city != nullptr){
+            if(nc->distance > more_distanced_city->distance){
+                more_distanced_city = nc;
             }
+        }else{
+            more_distanced_city = nc;
         }
     }
 
-    radius = max_distance;
-
-    return max_distance_cid;
+    return more_distanced_city->city;
 }
 
-int ApproxResolver::dist(const City &c1, const Warehouse* c2)
+int ApproxResolver::dist(const City *c1, const Warehouse* c2)
 {
-    return sqrt((pow(c2->x()-c1.x(),2) + pow(c2->y()-c1.y(),2)));
+    return sqrt((pow(c2->x()-c1->x(),2) + pow(c2->y()-c1->y(),2)));
 }
 
-QString ApproxResolver::gen_wh_key(const Warehouse* wh)
+NearestCenter* ApproxResolver::nearest_wh_from(const City* c)
 {
-    return QString::number(wh->x())+"-"+QString::number(wh->y());
+    int minDist = INT_MAX;
+    Warehouse* minDistWh = 0;
+
+
+    for(int i = 0; i< _wh.size(); i++){
+        Warehouse *curr_wh = _wh.at(i);
+        int curr_dist = dist(c, curr_wh);
+        if(curr_dist < minDist){
+            minDist = curr_dist;
+            minDistWh = curr_wh;
+        }
+    }
+
+    return new NearestCenter(c, minDistWh, minDist);
+}
+
+City *ApproxResolver::get_random_city()
+{
+    int current_city = std::rand() % _cities.size();
+    qDebug() << "Random city is" << current_city;
+    return _cities.at(current_city);
 }
 

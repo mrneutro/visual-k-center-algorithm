@@ -22,7 +22,7 @@ public:
     Q_INVOKABLE int getR(int item);
 private:
     ApproxResolver *_resolver = nullptr;
-    QList<City> _cities;
+    QList<City*> _cities;
     int _center_count = 0;
     QList<Warehouse*> _solution;
 signals:
