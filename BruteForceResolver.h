@@ -16,6 +16,11 @@ private:
     void calc(const char *str);
     int shiftx=0;
     int shifty=0;
+    int width = 0;
+    int height = 0;
+    void evaluate_solution(const char* solution);
+    int min_solution = INT_MAX;
+    QList<Warehouse*> opt_solution;
 
 };
 

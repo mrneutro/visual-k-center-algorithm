@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Utils.h"
 
 unsigned int count = 0;
 clock_t start;
@@ -44,8 +45,8 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     shiftx = xmin->x();
     shifty = ymin->y();
 
-    int width = xmax->x()-xmin->x();
-    int height = ymax->y()-ymin->y();
+    width = xmax->x()-xmin->x();
+    height = ymax->y()-ymin->y();
 
     qDebug() << "W:" << width << " H:" << height;
 
@@ -85,8 +86,8 @@ void BruteForceResolver::fill(int *rep_char,char *temp_buff) {
 //        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 
 //        start = clock();
-
-        printf("%s\n", temp_buff);
+        evaluate_solution(temp_buff);
+//        printf("%s\n", temp_buff);
     }
 }
 
@@ -107,4 +108,32 @@ void BruteForceResolver::calc(const char *str) {
     qDebug() << "Repetitions counted";
 
     fill(repetion_of_char,temp_buff);
+}
+
+void BruteForceResolver::evaluate_solution(const char *solution)
+{
+    QList<Warehouse*> whs;
+    int len = strlen(solution);
+    for(int i=0; i < len; i++){
+        if(solution[i] == 'F'){
+            int x = (i%width)+shiftx;
+            int y = (i/height)+shifty;
+            Warehouse *wh = new Warehouse(x, y, 0);
+            whs.append(wh);
+        }else{
+            qDebug() << "NOT F";
+        }
+    }
+
+    int current = Utils::getMinMaxDistance(_cities, whs);
+    qDebug() << "Current solution is: " << current;
+    if(current < min_solution){
+        opt_solution = whs;
+        min_solution = current;
+    }else{
+        for(int i=0; i<whs.count(); i++){
+            delete whs.at(i);
+        }
+    }
+
 }
