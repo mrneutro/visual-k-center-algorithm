@@ -39,4 +39,5 @@ HEADERS += \
     ApproxFacade.h \
     Warehouse.h \
     NearestCenter.h \
-    Resolver.h
+    Resolver.h \
+    CenterResolver.h

@@ -137,6 +137,7 @@ ApplicationWindow {
 
             ComboBox {
                 id: algorithm
+                visible: false
                 width: 200
                 model: [ "2Approx", "Random", "Optimum" ]
             }
@@ -203,6 +204,9 @@ ApplicationWindow {
                     var height = drawingCanvas.height;
                     var ctx = drawingCanvas.getContext("2d");
                     ctx.reset();
+                    cities = []
+                    approxFacade.init();
+
 
                     for(var i=0; i<city_count.text; i++){
                         var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}

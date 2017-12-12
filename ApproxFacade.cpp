@@ -10,6 +10,7 @@ ApproxFacade::ApproxFacade(QObject *parent) : QObject(parent)
 void ApproxFacade::init()
 {
     _cities.clear();
+    _solution.clear();
 }
 
 void ApproxFacade::setCity(int x, int y)

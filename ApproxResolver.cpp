@@ -3,12 +3,6 @@
 #include <ctime>
 #include <QDebug>
 
-
-ApproxResolver::ApproxResolver(QObject *parent) : QObject(parent)
-{
-
-}
-
 ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 {
     _cities = cities;
