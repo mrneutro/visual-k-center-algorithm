@@ -36,8 +36,7 @@ int main(int argc, char *argv[])
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-unsigned int count = 0;
-clock_t start;
+
 
 void fill(int *rep_char,char *temp_buff) {
     int z=1;

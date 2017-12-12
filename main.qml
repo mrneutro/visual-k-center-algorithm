@@ -41,24 +41,24 @@ ApplicationWindow {
     Connections {
         target: approxFacade
         onDataAvailable: {
-            var ctx = drawingCanvas.getContext("2d");
+//            var ctx = drawingCanvas.getContext("2d");
 
-            var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
-            var r1 = approxFacade.getR(0);
-            addCenter(ctx, c1, "green");
+//            var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
+//            var r1 = approxFacade.getR(0);
+//            addCenter(ctx, c1, "green");
 
-            for(var i = 1; i < k_centers.text; i++){
-                console.log("RADIUS is " + approxFacade.getR(i))
-                var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
-                var r = approxFacade.getR(i);
-                addCenter(ctx, c, "blue");
-                if(k_centers.text-1 != i){
-                    //addRadius(ctx, c, r);
-                }
-            }
+//            for(var i = 1; i < k_centers.text; i++){
+//                console.log("RADIUS is " + approxFacade.getR(i))
+//                var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
+//                var r = approxFacade.getR(i);
+//                addCenter(ctx, c, "blue");
+//                if(k_centers.text-1 != i){
+//                    //addRadius(ctx, c, r);
+//                }
+//            }
 
-            drawingCanvas.requestPaint();
-            pbar.visible = false;
+//            drawingCanvas.requestPaint();
+//            pbar.visible = false;
         }
         onProgressUpdate: progUpdate(val);
     }
