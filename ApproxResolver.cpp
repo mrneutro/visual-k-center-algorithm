@@ -5,6 +5,7 @@
 
 ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 {
+    qDebug() << "Started ApproxResolver";
     _cities = cities;
     _center_count = center_count;
     std::srand(std::time(0)); // use current time as seed for random generator

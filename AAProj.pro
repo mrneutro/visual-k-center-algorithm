@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     ApproxFacade.cpp \
     Warehouse.cpp \
     NearestCenter.cpp \
-    Resolver.cpp
+    Resolver.cpp \
+    BruteForceResolver.cpp
 
 RESOURCES += qml.qrc
 
@@ -40,4 +41,5 @@ HEADERS += \
     Warehouse.h \
     NearestCenter.h \
     Resolver.h \
-    CenterResolver.h
+    CenterResolver.h \
+    BruteForceResolver.h

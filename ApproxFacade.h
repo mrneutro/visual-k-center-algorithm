@@ -17,7 +17,7 @@ public:
     Q_INVOKABLE void init();
     Q_INVOKABLE void setCity(int x, int y);
     Q_INVOKABLE void setCenterCount(int k);
-    Q_INVOKABLE void resolveImmediate();
+    Q_INVOKABLE void resolveImmediate(QString algo);
     Q_INVOKABLE int getX(int item);
     Q_INVOKABLE int getY(int item);
     Q_INVOKABLE int getR(int item);

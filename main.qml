@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.2
 
 
 ApplicationWindow {
@@ -14,6 +15,27 @@ ApplicationWindow {
 
     Component.onCompleted: {
         approxFacade.init();
+    }
+
+    Dialog {
+        id: dialog
+        visible: false
+        title: "Choose a date"
+
+        function flash(msg){
+            dialogText.text = msg;
+            dialog.visible = true;
+        }
+
+        standardButtons: StandardButton.Ok
+
+        onAccepted: console.log("Saving the date " +
+                                calendar.selectedDate.toLocaleDateString())
+        Text {
+            id: dialogText
+            text: "ciao"
+        }
+
     }
 
     Connections {
@@ -117,6 +139,18 @@ ApplicationWindow {
         }
     }
 
+    function clearCanvas(){
+        startBtn.enabled = true
+        var width = drawingCanvas.width;
+        var height = drawingCanvas.height;
+        var ctx = drawingCanvas.getContext("2d");
+        ctx.reset();
+        cities = []
+        approxFacade.init();
+
+        drawingCanvas.requestPaint();
+    }
+
     toolBar:ToolBar {
         RowLayout {
             anchors.fill: parent
@@ -137,9 +171,9 @@ ApplicationWindow {
 
             ComboBox {
                 id: algorithm
-                visible: false
+                visible: true
                 width: 200
-                model: [ "2Approx", "Random", "Optimum" ]
+                model: [ "2Approx", "Bruteforce"]
             }
 
 
@@ -148,13 +182,22 @@ ApplicationWindow {
                 id: startBtn
                 text: "Resolve"
                 onClicked: {
-                    approxFacade.setCenterCount(k_centers.text);
-                    pbar.visible = true;
-                    //                    startBtn.visible = false;
-                    //                    stepBtn.visible = true;
-                    //                    k_centers.enabled = false;
-                    //                    finishBtn.visible = true;
-                    approxFacade.resolveImmediate();
+                    if(cities.length > 0){
+                        if(k_centers.text > 0){
+                            startBtn.enabled = false
+                            approxFacade.setCenterCount(k_centers.text);
+                            pbar.visible = true;
+                            //                    startBtn.visible = false;
+                            //                    stepBtn.visible = true;
+                            //                    k_centers.enabled = false;
+                            //                    finishBtn.visible = true;
+                            approxFacade.resolveImmediate(algorithm.currentText);
+                        }else{
+                            dialog.flash("Impossible run algorithm with 0 centers!");
+                        }
+                    }else{
+                        dialog.flash("City count is not valid");
+                    }
 
                 }
             }
@@ -200,6 +243,7 @@ ApplicationWindow {
                 visible: true;
                 text: "Random"
                 onClicked: {
+                    startBtn.enabled = true
                     var width = drawingCanvas.width;
                     var height = drawingCanvas.height;
                     var ctx = drawingCanvas.getContext("2d");
@@ -219,17 +263,12 @@ ApplicationWindow {
             }
 
             ToolButton {
+                id: clearBtn
                 visible: true;
                 text: "Clear"
                 onClicked: {
-                    var width = drawingCanvas.width;
-                    var height = drawingCanvas.height;
-                    var ctx = drawingCanvas.getContext("2d");
-                    ctx.reset();
-                    cities = []
-                    approxFacade.init();
 
-                    drawingCanvas.requestPaint();
+                    clearCanvas();
                 }
             }
 
@@ -259,6 +298,11 @@ ApplicationWindow {
         id: canvasid
         anchors.fill: parent
         onClicked: {
+            if(!startBtn.enabled){
+                clearCanvas();
+
+            }
+
             var ctx = drawingCanvas.getContext("2d");
             var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
             drawCircle(ctx, obj, "red");

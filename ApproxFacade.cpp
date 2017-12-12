@@ -1,6 +1,7 @@
 #include "ApproxFacade.h"
 #include <QDebug>
 #include <QtConcurrent>
+#include "BruteForceResolver.h"
 
 ApproxFacade::ApproxFacade(QObject *parent) : QObject(parent)
 {
@@ -25,14 +26,19 @@ void ApproxFacade::setCenterCount(int k)
     _center_count = k;
 }
 
-void ApproxFacade::resolveImmediate()
+void ApproxFacade::resolveImmediate(QString algo)
 {
-    QtConcurrent::run([this] {
+    QtConcurrent::run([this, algo] {
+
         if(this->_resolver != nullptr)
             delete this->_resolver;
         _solution.clear();
 
-        this->_resolver = new ApproxResolver(this->_cities, this->_center_count);
+        if(algo == "2Approx"){
+            this->_resolver = new ApproxResolver(this->_cities, this->_center_count);
+        }else{
+            this->_resolver = new BruteForceResolver(this->_cities, this->_center_count);
+        }
         connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         this->_solution = this->_resolver->resolve_immediatly();
         emit dataAvailable();
