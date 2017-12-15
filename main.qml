@@ -237,7 +237,6 @@ ApplicationWindow {
 
                     }
 
-
                     var ctx = drawingCanvas.getContext("2d");
 
                     var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
@@ -288,7 +287,7 @@ ApplicationWindow {
 
             Rectangle {
                 id: settingsPan
-                height: 100
+                height: 50
                 color:"blue"
                 width: childrenRect.width
 
@@ -315,79 +314,29 @@ ApplicationWindow {
                         width: 100
                         model: [ "2Approx", "Bruteforce"]
                     }
-
-
-                    ToolButton {
-                        id: startBtn
-                        text: "Resolve"
-                        onClicked: {
-                            if(cities.length > 0){
-                                if(k_centers.text > 0){
-                                    startBtn.enabled = false
-                                    approxFacade.setCenterCount(k_centers.text);
-                                    pbar.visible = true;
-                                    //                    startBtn.visible = false;
-                                    //                    stepBtn.visible = true;
-                                    //                    k_centers.enabled = false;
-                                    //                    finishBtn.visible = true;
-                                    approxFacade.resolveImmediate(algorithm.currentText);
-                                    stopBtn.visible = true;
-                                    startBtn.visible = false;
-                                }else{
-                                    dialog.flash("Impossible run algorithm with 0 centers!");
-                                }
-                            }else{
-                                dialog.flash("City count is not valid");
-                            }
-
-                        }
-                    }
-
-                    ToolButton {
-                        id: stopBtn
-                        visible: false
-                        text: "STOP"
-                        onClicked: {
-                            approxFacade.stop();
-                            startBtn.visible = true;
-                            stopBtn.visible = false;
-                            pbar.visible = false;
-                        }
-                    }
-
-                    //            ToolButton {
-                    //                id: stepBtn
-                    //                visible: false
-                    //                text: ">>>"
-                    //                onClicked: {
-                    //                    console.log("start clicked")
-                    //                    stepOver();
-
-
-                    //                }
-                    //            }
-
-                    ToolButton {
-                        id: finishBtn
-                        visible: false;
-                        text: "Finish"
-                        onClicked: {
-                            finishAll();
-                        }
-                    }
                 }
 
             }
 
-            UnderlinedText {
+            Item {
+                id: spacer1
                 anchors.top: settingsPan.bottom
+                width: 100
+                height: 25
+            }
+
+            UnderlinedText {
+                id: settingsTitle
+                anchors.top: spacer1.bottom
                 title: "Utilities"
             }
 
             RowLayout {
+                id: optionsGroup
                 Button {
                     id: clearBtn
                     visible: true;
+                    implicitWidth: 92
                     text: "Clear"
                     onClicked: {
                         clearCanvas();
@@ -397,6 +346,7 @@ ApplicationWindow {
                 Button {
                     id: randomBtn
                     visible: true
+                    implicitWidth: 92
                     text: "Random"
                     onClicked: {
                         randomDialog.visible = true
@@ -404,21 +354,79 @@ ApplicationWindow {
                 }
             }
 
-            Rectangle {
-                color: "red"
-                height: childrenRect.height
-                width: childrenRect.width
+            Item {
+                id: spacer2
+                anchors.top: optionsGroup.bottom
+                width: 100
+                height: 10
+            }
 
-                ToolButton {
-                    visible: true;
-                    text: "Random"
-                    onClicked: {
+            UnderlinedText {
+                id: runningTitle
+                anchors.top: spacer2.bottom
+                title: "Run"
+            }
 
+            Button {
+                id: startBtn
+                text: "Resolve immediate"
+                implicitWidth: 190
+                onClicked: {
+                    if(cities.length > 0){
+                        if(k_centers.text > 0){
+                            startBtn.enabled = false
+                            approxFacade.setCenterCount(k_centers.text);
+                            pbar.visible = true;
+                            //                    startBtn.visible = false;
+                            //                    stepBtn.visible = true;
+                            //                    k_centers.enabled = false;
+                            //                    finishBtn.visible = true;
+                            approxFacade.resolveImmediate(algorithm.currentText);
+                            stopBtn.visible = true;
+                            startBtn.visible = false;
+                        }else{
+                            dialog.flash("Impossible run algorithm with 0 centers!");
+                        }
+                    }else{
+                        dialog.flash("City count is not valid");
                     }
+
+                }
+            }
+
+            Button {
+                id: startBtnSbS
+                text: "Resolve step-by-step"
+                implicitWidth: 190
+            }
+
+            Button {
+                id: stopBtn
+                visible: false
+                text: "STOP"
+                implicitWidth: 190
+                onClicked: {
+                    approxFacade.stop();
+                    startBtn.visible = true;
+                    stopBtn.visible = false;
+                    pbar.visible = false;
                 }
 
-
+                style: ButtonStyle {
+                        background: Rectangle {
+                            implicitWidth: 100
+                            implicitHeight: 25
+                            border.width: control.activeFocus ? 2 : 1
+                            border.color: "#888"
+                            radius: 4
+                            gradient: Gradient {
+                                GradientStop { position: 0 ; color: control.pressed ? "#ff3a3a" : "#ff5b5b" }
+                                GradientStop { position: 1 ; color: control.pressed ? "#ff5b5b" : "#ff3a3a" }
+                            }
+                        }
+                    }
             }
+
         }
 
 

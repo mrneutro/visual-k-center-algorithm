@@ -31,7 +31,7 @@ Item {
         anchors.topMargin: 1
         height: 1
         width: parent.width
-        color: "#40aade"
+        color: "#c5cccb"
         anchors.left: parent.left
         anchors.right: parent.right
     }
