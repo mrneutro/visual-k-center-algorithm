@@ -45,19 +45,12 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     shiftx = xmin->x();
     shifty = ymin->y();
 
-    width = xmax->x()-xmin->x();
-    height = ymax->y()-ymin->y();
-    if(width == 0) {
-        width = 1;
-    }
-
-    if(height == 0){
-        height = 1;
-    }
+    width = xmax->x()-xmin->x()+1;
+    height = ymax->y()-ymin->y()+1;
 
     qDebug() << "W:" << width << " H:" << height;
 
-    char* map = (char*)malloc(width*height+1);
+    char* map = (char*)malloc(width*height);
     if(map == NULL){
         qDebug() << "Alloc failed";
     }
@@ -124,15 +117,15 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%width)+shiftx+1;
-            int y = (i/(width))+shifty;
+            int x = (i%width)+shiftx;
+            int y = (i/width)+shifty;
 
             Warehouse *wh = new Warehouse(x, y, 0);
             whs.append(wh);
         }
     }
 
-    if(solution[0] == 'F' && solution[24] == 'F'){
+    if(solution[0] == 'F' && solution[10] == 'F'){
         qDebug("OK");
     }
 

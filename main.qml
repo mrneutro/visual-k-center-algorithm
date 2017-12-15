@@ -273,7 +273,7 @@ ApplicationWindow {
 
 
 
-                    obj = {"x":125, "y":100};
+                    obj = {"x":110, "y":100};
                     drawCircle(ctx, obj, "red");
                     drawingCanvas.requestPaint();
 
