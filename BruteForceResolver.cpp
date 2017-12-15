@@ -61,13 +61,14 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     if(map == NULL){
         qDebug() << "Alloc failed";
     }
-    qDebug() << "Size of char is " << sizeof(char);
 
     memset(map, 'E', width*height);
     memset(map, 'F', _center_count);
-    map[width*height-1]=0x00;
+    map[width*height]=0x00;
     qDebug() << "Start calc";
     calc(map);
+
+
 
     return _solutions;
 }
@@ -119,20 +120,28 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 {
     QList<Warehouse*> whs;
     int len = strlen(solution);
+    qDebug() << QString(solution);
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%width)+shiftx;
-            int y = (i/width)+shifty;
+            int x = (i%width)+shiftx+1;
+            int y = (i/(width))+shifty;
+
             Warehouse *wh = new Warehouse(x, y, 0);
             whs.append(wh);
         }
+    }
+
+    if(solution[0] == 'F' && solution[24] == 'F'){
+        qDebug("OK");
     }
 
     int current_max_dist = Utils::get_max_dist(_cities, whs);
     if(current_max_dist < min_solution){
         _solutions = whs;
         min_solution = current_max_dist;
+        qDebug() << "Current min solution";
+        qDebug() << QString(solution);
     }else{
         for(int i=0; i<whs.count(); i++){
             delete whs.at(i);
