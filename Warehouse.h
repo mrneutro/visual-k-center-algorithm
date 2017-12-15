@@ -17,6 +17,12 @@ public:
 
     Q_INVOKABLE int radius() const;
 
+    void setX(int x);
+
+    void setY(int y);
+
+    void setRadius(int radius);
+
 private:
     int _x;
     int _y;

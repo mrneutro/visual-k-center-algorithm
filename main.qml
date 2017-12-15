@@ -41,24 +41,24 @@ ApplicationWindow {
     Connections {
         target: approxFacade
         onDataAvailable: {
-//            var ctx = drawingCanvas.getContext("2d");
+            var ctx = drawingCanvas.getContext("2d");
 
-//            var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
-//            var r1 = approxFacade.getR(0);
-//            addCenter(ctx, c1, "green");
+            var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
+            var r1 = approxFacade.getR(0);
+            addCenter(ctx, c1, "green");
 
-//            for(var i = 1; i < k_centers.text; i++){
-//                console.log("RADIUS is " + approxFacade.getR(i))
-//                var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
-//                var r = approxFacade.getR(i);
-//                addCenter(ctx, c, "blue");
-//                if(k_centers.text-1 != i){
-//                    //addRadius(ctx, c, r);
-//                }
-//            }
+            for(var i = 1; i < k_centers.text; i++){
+                console.log("RADIUS is " + approxFacade.getR(i))
+                var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
+                var r = approxFacade.getR(i);
+                addCenter(ctx, c, "blue");
+                if(k_centers.text-1 != i){
+                    //addRadius(ctx, c, r);
+                }
+            }
 
-//            drawingCanvas.requestPaint();
-//            pbar.visible = false;
+            drawingCanvas.requestPaint();
+            pbar.visible = false;
         }
         onProgressUpdate: progUpdate(val);
     }
@@ -252,12 +252,37 @@ ApplicationWindow {
                     approxFacade.init();
 
 
-                    for(var i=0; i<city_count.text; i++){
-                        var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}
-                        approxFacade.setCity(obj.x, obj.y);
-                        cities.push(obj);
-                        drawCircle(ctx, obj, "red");
-                    }
+//                    for(var i=0; i<city_count.text; i++){
+//                        var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}
+//                        approxFacade.setCity(obj.x, obj.y);
+//                        cities.push(obj);
+//                        drawCircle(ctx, obj, "red");
+//                    }
+
+
+
+
+                    var obj = {"x":100, "y":100};
+                    drawCircle(ctx, obj, "red");
+                    drawingCanvas.requestPaint();
+
+                    cities.push(obj);
+                    console.log(approxFacade);
+                    approxFacade.setCity(obj.x, obj.y);
+                    city_count.text = cities.length
+
+
+
+                    obj = {"x":150, "y":100};
+                    drawCircle(ctx, obj, "red");
+                    drawingCanvas.requestPaint();
+
+                    cities.push(obj);
+                    console.log(approxFacade);
+                    approxFacade.setCity(obj.x, obj.y);
+                    city_count.text = cities.length
+
+
                     drawingCanvas.requestPaint();
                 }
             }
@@ -303,7 +328,9 @@ ApplicationWindow {
 
             }
 
+
             var ctx = drawingCanvas.getContext("2d");
+
             var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
             drawCircle(ctx, obj, "red");
             drawingCanvas.requestPaint();

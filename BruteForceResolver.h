@@ -20,8 +20,6 @@ private:
     int height = 0;
     void evaluate_solution(const char* solution);
     int min_solution = INT_MAX;
-    QList<Warehouse*> opt_solution;
-
 };
 
 #endif // BRUTEFORCERESOLVER_H

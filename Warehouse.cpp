@@ -33,3 +33,18 @@ int Warehouse::radius() const
 {
     return _radius;
 }
+
+void Warehouse::setX(int x)
+{
+    _x = x;
+}
+
+void Warehouse::setY(int y)
+{
+    _y = y;
+}
+
+void Warehouse::setRadius(int radius)
+{
+    _radius = radius;
+}

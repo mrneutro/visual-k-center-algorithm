@@ -47,6 +47,13 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
 
     width = xmax->x()-xmin->x();
     height = ymax->y()-ymin->y();
+    if(width == 0) {
+        width = 1;
+    }
+
+    if(height == 0){
+        height = 1;
+    }
 
     qDebug() << "W:" << width << " H:" << height;
 
@@ -105,8 +112,6 @@ void BruteForceResolver::calc(const char *str) {
         repetion_of_char[*str++]++; // count how many ripetitions of chars are
     }
 
-    qDebug() << "Repetitions counted";
-
     fill(repetion_of_char,temp_buff);
 }
 
@@ -114,22 +119,20 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 {
     QList<Warehouse*> whs;
     int len = strlen(solution);
+
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
             int x = (i%width)+shiftx;
-            int y = (i/height)+shifty;
+            int y = (i/width)+shifty;
             Warehouse *wh = new Warehouse(x, y, 0);
             whs.append(wh);
-        }else{
-            qDebug() << "NOT F";
         }
     }
 
-    int current = Utils::getMinMaxDistance(_cities, whs);
-    qDebug() << "Current solution is: " << current;
-    if(current < min_solution){
-        opt_solution = whs;
-        min_solution = current;
+    int current_max_dist = Utils::get_max_dist(_cities, whs);
+    if(current_max_dist < min_solution){
+        _solutions = whs;
+        min_solution = current_max_dist;
     }else{
         for(int i=0; i<whs.count(); i++){
             delete whs.at(i);
