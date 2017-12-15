@@ -61,13 +61,20 @@ ApplicationWindow {
             pbar.visible = false;
         }
         onProgressUpdate: progUpdate(val);
+        onProgressMaxVal: progMax(val);
     }
 
     property var cities: [];
+
     function progUpdate(val){
-        console.log("Val updated");
         pbar.value = val;
+        progressTxt.text = val + "/" + pbar.maximumValue
     }
+
+    function progMax(val){
+        pbar.maximumValue = val;
+    }
+
     function drawLine(ctx, objFrom, objTo){
         ctx.lineWidth = 1;
         ctx.strokeStyle = "red"
@@ -83,7 +90,7 @@ ApplicationWindow {
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.moveTo(obj.x, obj.y);
-        ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
+        ctx.arc(obj.x, obj.y, 1, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
     }
@@ -103,7 +110,7 @@ ApplicationWindow {
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.moveTo(obj.x, obj.y);
-        ctx.arc(obj.x, obj.y, 5, 0, Math.PI * 2, false);
+        ctx.arc(obj.x, obj.y, 1, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
         drawingCanvas.requestPaint();
@@ -272,8 +279,7 @@ ApplicationWindow {
                     city_count.text = cities.length
 
 
-
-                    obj = {"x":110, "y":100};
+                    obj = {"x":125, "y":100};
                     drawCircle(ctx, obj, "red");
                     drawingCanvas.requestPaint();
 
@@ -308,6 +314,14 @@ ApplicationWindow {
         width: parent.width
         minimumValue: 0
         maximumValue: k_centers.text - 1
+
+        Text {
+            id: progressTxt
+            text: "0/0";
+            color: "black"
+            anchors.centerIn: parent
+        }
+
     }
 
     Canvas {

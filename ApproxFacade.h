@@ -29,6 +29,7 @@ private:
 signals:
     void dataAvailable();
     void progressUpdate(int val);
+    void progressMaxVal(int val);
 public slots:
 };
 

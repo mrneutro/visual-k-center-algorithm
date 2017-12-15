@@ -12,6 +12,7 @@ public:
     virtual QList<Warehouse *> resolve_immediatly() = 0;
 signals:
     void progressUpdate(int val);
+    void progressMaxVal(int val);
 };
 
 #endif // CENTERRESOLVER_H

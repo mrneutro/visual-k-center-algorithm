@@ -40,9 +40,11 @@ void ApproxFacade::resolveImmediate(QString algo)
             this->_resolver = new BruteForceResolver(this->_cities, this->_center_count);
         }
         connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
+        connect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
         this->_solution = this->_resolver->resolve_immediatly();
         emit dataAvailable();
         disconnect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
+        disconnect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
     });
 }
 

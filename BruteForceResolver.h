@@ -20,6 +20,8 @@ private:
     int height = 0;
     void evaluate_solution(const char* solution);
     int min_solution = INT_MAX;
+    int possible_solutions = 0;
+    int current_position = 0;
 };
 
 #endif // BRUTEFORCERESOLVER_H

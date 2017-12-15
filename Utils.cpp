@@ -31,3 +31,16 @@ int Utils::dist(const City *c1, const Warehouse *c2)
 {
     return sqrt((pow(c2->x()-c1->x(),2) + pow(c2->y()-c1->y(),2)));
 }
+
+unsigned long long Utils::choose(unsigned long long n, unsigned long long k)
+{
+    if (k > n) {
+        return 0;
+    }
+    unsigned long long r = 1;
+    for (unsigned long long d = 1; d <= k; ++d) {
+        r *= n--;
+        r /= d;
+    }
+    return r;
+}

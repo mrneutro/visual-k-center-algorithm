@@ -49,6 +49,13 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     height = ymax->y()-ymin->y()+1;
 
     qDebug() << "W:" << width << " H:" << height;
+    unsigned long long max_count = Utils::choose(width*height, _center_count);
+
+    qDebug() << max_count;
+    possible_solutions = max_count; // \todo fare con questo qualcosa
+
+    qDebug() << "Possible solutions" << possible_solutions;
+    emit progressMaxVal(possible_solutions);
 
     char* map = (char*)malloc(width*height);
     if(map == NULL){
@@ -60,8 +67,6 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     map[width*height]=0x00;
     qDebug() << "Start calc";
     calc(map);
-
-
 
     return _solutions;
 }
@@ -113,7 +118,7 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 {
     QList<Warehouse*> whs;
     int len = strlen(solution);
-    qDebug() << QString(solution);
+    //qDebug() << QString(solution);
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
@@ -123,10 +128,6 @@ void BruteForceResolver::evaluate_solution(const char *solution)
             Warehouse *wh = new Warehouse(x, y, 0);
             whs.append(wh);
         }
-    }
-
-    if(solution[0] == 'F' && solution[10] == 'F'){
-        qDebug("OK");
     }
 
     int current_max_dist = Utils::get_max_dist(_cities, whs);
@@ -140,5 +141,5 @@ void BruteForceResolver::evaluate_solution(const char *solution)
             delete whs.at(i);
         }
     }
-
+    emit progressUpdate(++current_position);
 }
