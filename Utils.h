@@ -1,18 +1,18 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include <QList>
-#include "City.h"
-#include "Warehouse.h"
+
+#include "model/City.h"
+#include "model/Warehouse.h"
 
 
 class Utils
 {
 public:
-    Utils();
-    static int get_max_dist(QList<City*> cities, QList<Warehouse*> wh);
-    static int dist(const City* c1, const Warehouse* c2);
-    static int combinations(int n, int r);
-    static unsigned long long choose(unsigned long long n, unsigned long long k);
+    static uint get_max_dist(QList<City*> cities, QList<Warehouse*> wh);
+    static uint dist(const City* c1, const Warehouse* c2);
+    static uint combinations(int n, int r);
+    static quint64 choose(quint64 n, quint64 k);
 };
 
 #endif // UTILS_H

@@ -1,32 +1,33 @@
-#include "ApproxFacade.h"
+#include "ResolverFacade.h"
 #include <QDebug>
 #include <QtConcurrent>
-#include "BruteForceResolver.h"
+#include "resolver/BruteForceResolver.h"
+#include "resolver/ApproxResolver.h"
 
-ApproxFacade::ApproxFacade(QObject *parent) : QObject(parent)
+ResolverFacade::ResolverFacade(QObject *parent) : QObject(parent)
 {
 
 }
 
-void ApproxFacade::init()
+void ResolverFacade::init()
 {
     _cities.clear();
     _solution.clear();
 }
 
-void ApproxFacade::setCity(int x, int y)
+void ResolverFacade::setCity(int x, int y)
 {
     City* c = new City(x,y);
     //qDebug() << "New city is: " << x << " " << y;
     _cities.append(c);
 }
 
-void ApproxFacade::setCenterCount(int k)
+void ResolverFacade::setCenterCount(int k)
 {
     _center_count = k;
 }
 
-void ApproxFacade::resolveImmediate(QString algo)
+void ResolverFacade::resolveImmediate(QString algo)
 {
     QtConcurrent::run([this, algo] {
 
@@ -48,17 +49,17 @@ void ApproxFacade::resolveImmediate(QString algo)
     });
 }
 
-int ApproxFacade::getX(int item)
+int ResolverFacade::getX(int item)
 {
     return _solution.at(item)->x();
 }
 
-int ApproxFacade::getY(int item)
+int ResolverFacade::getY(int item)
 {
     return _solution.at(item)->y();
 }
 
-int ApproxFacade::getR(int item)
+int ResolverFacade::getR(int item)
 {
     return _solution.at(item)->radius();
 }

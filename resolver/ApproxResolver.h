@@ -1,11 +1,10 @@
 #ifndef APPROXRESOLVER_H
 #define APPROXRESOLVER_H
 #include <QObject>
-#include <City.h>
 #include <QList>
-#include "Warehouse.h"
-#include <QHash>
-#include "NearestCenter.h"
+#include <model/City.h>
+#include "model/Warehouse.h"
+#include "model/NearestCenter.h"
 #include "CenterResolver.h"
 
 class ApproxResolver: public CenterResolver

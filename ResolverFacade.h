@@ -1,19 +1,17 @@
 #ifndef APPROXFACADE_H
 #define APPROXFACADE_H
-#include "ApproxResolver.h"
-#include <QList>
-#include "City.h"
-
 #include <QObject>
-#include <Warehouse.h>
-#include <QHash>
+#include <QList>
+
+#include "model/City.h"
+#include "model/Warehouse.h"
 #include "CenterResolver.h"
 
-class ApproxFacade : public QObject
+class ResolverFacade : public QObject
 {
     Q_OBJECT
 public:
-    explicit ApproxFacade(QObject *parent = nullptr);
+    explicit ResolverFacade(QObject *parent = nullptr);
     Q_INVOKABLE void init();
     Q_INVOKABLE void setCity(int x, int y);
     Q_INVOKABLE void setCenterCount(int k);
@@ -21,6 +19,9 @@ public:
     Q_INVOKABLE int getX(int item);
     Q_INVOKABLE int getY(int item);
     Q_INVOKABLE int getR(int item);
+    Q_INVOKABLE void stop(){
+        _resolver->stop = true;
+    }
 private:
     CenterResolver *_resolver = nullptr;
     QList<City*> _cities;

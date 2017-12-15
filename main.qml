@@ -9,34 +9,9 @@ import QtQuick.Dialogs 1.2
 ApplicationWindow {
     id: window
     visible: true
-    width: 600
+    width: 800
     height: 600
-    title: qsTr("Hello World")
-
-    Component.onCompleted: {
-        approxFacade.init();
-    }
-
-    Dialog {
-        id: dialog
-        visible: false
-        title: "Choose a date"
-
-        function flash(msg){
-            dialogText.text = msg;
-            dialog.visible = true;
-        }
-
-        standardButtons: StandardButton.Ok
-
-        onAccepted: console.log("Saving the date " +
-                                calendar.selectedDate.toLocaleDateString())
-        Text {
-            id: dialogText
-            text: "ciao"
-        }
-
-    }
+    title: qsTr("Metric k-center solver")
 
     Connections {
         target: approxFacade
@@ -158,201 +133,294 @@ ApplicationWindow {
         drawingCanvas.requestPaint();
     }
 
-    toolBar:ToolBar {
+    function generateRandomCities(count){
+        var width = drawingCanvas.width;
+        var height = drawingCanvas.height;
+        var ctx = drawingCanvas.getContext("2d");
+
+
+        for(var i=0; i<count; i++){
+            var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}
+            approxFacade.setCity(obj.x, obj.y);
+            cities.push(obj);
+            drawCircle(ctx, obj, "red");
+        }
+
+        drawingCanvas.requestPaint();
+    }
+
+    Dialog {
+        id: dialog
+        visible: false
+        title: "Choose a date"
+
+        function flash(msg){
+            dialogText.text = msg;
+            dialog.visible = true;
+        }
+
+        standardButtons: StandardButton.Ok
+
+        onAccepted: console.log("Saving the date " +
+                                calendar.selectedDate.toLocaleDateString())
+        Text {
+            id: dialogText
+            text: "ciao"
+        }
+
+    }
+
+    Dialog {
+        id: randomDialog
+        visible: false
+        title: "Choose random cities count"
+
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+
+        onAccepted: {
+            generateRandomCities(randomDialogTxt.text)
+        }
+
+        onRejected: visible = false
         RowLayout {
-            anchors.fill: parent
+            Text{
+                text: "Random cities count: "
+            }
             TextField {
-                id: k_centers
-                //                style: TextFieldStyle {
-                //                    textColor: "black"
-                //                    background: Rectangle {
-                //                        radius: 2
-                //                        implicitWidth: 100
-                //                        implicitHeight: 24
-                //                        border.color: "#333"
-                //                        border.width: 1
-                //                    }
-                //                }
-                text: "2"
+                id: randomDialogTxt
+                text: "1"
+            }
+        }
+
+    }
+
+
+    Component.onCompleted: {
+        approxFacade.init();
+    }
+
+    Row {
+        id: mainPan
+        width: 600
+        height: 600
+        ProgressBar {
+            id: pbar
+            visible: false
+            value: 50
+            width: parent.width
+            minimumValue: 0
+            maximumValue: k_centers.text - 1
+
+            Text {
+                id: progressTxt
+                text: "0/0";
+                color: "black"
+                anchors.centerIn: parent
             }
 
-            ComboBox {
-                id: algorithm
-                visible: true
-                width: 200
-                model: [ "2Approx", "Bruteforce"]
+        }
+
+        Canvas {
+            id: drawingCanvas
+            width: 600
+            height: 600
+
+            onPaint: {
+
             }
-
-
-
-            ToolButton {
-                id: startBtn
-                text: "Resolve"
+            MouseArea {
+                id: canvasid
+                anchors.fill: parent
                 onClicked: {
-                    if(cities.length > 0){
-                        if(k_centers.text > 0){
-                            startBtn.enabled = false
-                            approxFacade.setCenterCount(k_centers.text);
-                            pbar.visible = true;
-                            //                    startBtn.visible = false;
-                            //                    stepBtn.visible = true;
-                            //                    k_centers.enabled = false;
-                            //                    finishBtn.visible = true;
-                            approxFacade.resolveImmediate(algorithm.currentText);
-                        }else{
-                            dialog.flash("Impossible run algorithm with 0 centers!");
-                        }
-                    }else{
-                        dialog.flash("City count is not valid");
+                    if(!startBtn.enabled){
+                        clearCanvas();
+
                     }
 
-                }
-            }
 
-            //            ToolButton {
-            //                id: stepBtn
-            //                visible: false
-            //                text: ">>>"
-            //                onClicked: {
-            //                    console.log("start clicked")
-            //                    stepOver();
-
-
-            //                }
-            //            }
-
-            ToolButton {
-                id: finishBtn
-                visible: false;
-                text: "Finish"
-                onClicked: {
-                    finishAll();
-                }
-            }
-
-            Item { Layout.fillWidth: true }
-
-            TextField {
-                id: city_count
-                //                style: TextFieldStyle {
-                //                    textColor: "black"
-                //                    background: Rectangle {
-                //                        radius: 2
-                //                        implicitWidth: 100
-                //                        implicitHeight: 24
-                //                        border.color: "#333"
-                //                        border.width: 1
-                //                    }
-                //                }
-                text: "0"
-            }
-            ToolButton {
-                visible: true;
-                text: "Random"
-                onClicked: {
-                    startBtn.enabled = true
-                    var width = drawingCanvas.width;
-                    var height = drawingCanvas.height;
                     var ctx = drawingCanvas.getContext("2d");
-                    ctx.reset();
-                    cities = []
-                    approxFacade.init();
 
-
-//                    for(var i=0; i<city_count.text; i++){
-//                        var obj = {"x":Math.floor((Math.random() * (width-30)))+15, "y":Math.floor((Math.random() * (height-30)))+15}
-//                        approxFacade.setCity(obj.x, obj.y);
-//                        cities.push(obj);
-//                        drawCircle(ctx, obj, "red");
-//                    }
-
-
-
-
-                    var obj = {"x":100, "y":100};
+                    var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
                     drawCircle(ctx, obj, "red");
                     drawingCanvas.requestPaint();
 
                     cities.push(obj);
                     console.log(approxFacade);
-                    approxFacade.setCity(obj.x, obj.y);
+                    approxFacade.setCity(Math.round(mouseX), Math.round(mouseY));
                     city_count.text = cities.length
+                }
+            }
+        }
 
 
-                    obj = {"x":125, "y":100};
-                    drawCircle(ctx, obj, "red");
-                    drawingCanvas.requestPaint();
+    }
 
-                    cities.push(obj);
-                    console.log(approxFacade);
-                    approxFacade.setCity(obj.x, obj.y);
-                    city_count.text = cities.length
+    Rectangle {
+        anchors.right: separatorPan.left
+        height: 600
+        width: 2
+        color: "#c9ddfc"
+    }
+
+    Rectangle {
+        id: separatorPan
+        anchors.right: configPan.left
+        height: 600
+        width: 7
+        color: "white"
+    }
+
+    Rectangle {
+        id: configPan
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: 200
+        height: 600
+
+        ColumnLayout {
+            anchors.topMargin: 50
+            anchors.leftMargin: 50
+
+            UnderlinedText {
+                title: "Configuration"
+            }
+
+            Rectangle {
+                id: settingsPan
+                height: 100
+                color:"blue"
+                width: childrenRect.width
+
+                GridLayout {
+                    columns: 2
+                    anchors.fill: parent
+
+                    Text {
+                        text: "Centers:"
+                    }
+                    TextField {
+                        id: k_centers
+                        text: "2"
+                        Layout.preferredWidth: 40
+                    }
+
+                    Text{
+                        text: "Algorithm:"
+                    }
+
+                    ComboBox {
+                        id: algorithm
+                        visible: true
+                        width: 100
+                        model: [ "2Approx", "Bruteforce"]
+                    }
 
 
-                    drawingCanvas.requestPaint();
+                    ToolButton {
+                        id: startBtn
+                        text: "Resolve"
+                        onClicked: {
+                            if(cities.length > 0){
+                                if(k_centers.text > 0){
+                                    startBtn.enabled = false
+                                    approxFacade.setCenterCount(k_centers.text);
+                                    pbar.visible = true;
+                                    //                    startBtn.visible = false;
+                                    //                    stepBtn.visible = true;
+                                    //                    k_centers.enabled = false;
+                                    //                    finishBtn.visible = true;
+                                    approxFacade.resolveImmediate(algorithm.currentText);
+                                    stopBtn.visible = true;
+                                    startBtn.visible = false;
+                                }else{
+                                    dialog.flash("Impossible run algorithm with 0 centers!");
+                                }
+                            }else{
+                                dialog.flash("City count is not valid");
+                            }
+
+                        }
+                    }
+
+                    ToolButton {
+                        id: stopBtn
+                        visible: false
+                        text: "STOP"
+                        onClicked: {
+                            approxFacade.stop();
+                            startBtn.visible = true;
+                            stopBtn.visible = false;
+                            pbar.visible = false;
+                        }
+                    }
+
+                    //            ToolButton {
+                    //                id: stepBtn
+                    //                visible: false
+                    //                text: ">>>"
+                    //                onClicked: {
+                    //                    console.log("start clicked")
+                    //                    stepOver();
+
+
+                    //                }
+                    //            }
+
+                    ToolButton {
+                        id: finishBtn
+                        visible: false;
+                        text: "Finish"
+                        onClicked: {
+                            finishAll();
+                        }
+                    }
+                }
+
+            }
+
+            UnderlinedText {
+                anchors.top: settingsPan.bottom
+                title: "Utilities"
+            }
+
+            RowLayout {
+                Button {
+                    id: clearBtn
+                    visible: true;
+                    text: "Clear"
+                    onClicked: {
+                        clearCanvas();
+                    }
+                }
+
+                Button {
+                    id: randomBtn
+                    visible: true
+                    text: "Random"
+                    onClicked: {
+                        randomDialog.visible = true
+                    }
                 }
             }
 
-            ToolButton {
-                id: clearBtn
-                visible: true;
-                text: "Clear"
-                onClicked: {
+            Rectangle {
+                color: "red"
+                height: childrenRect.height
+                width: childrenRect.width
 
-                    clearCanvas();
+                ToolButton {
+                    visible: true;
+                    text: "Random"
+                    onClicked: {
+
+                    }
                 }
-            }
 
-        }
-    }
-
-
-    ProgressBar {
-        id: pbar
-        visible: false
-        value: 50
-        width: parent.width
-        minimumValue: 0
-        maximumValue: k_centers.text - 1
-
-        Text {
-            id: progressTxt
-            text: "0/0";
-            color: "black"
-            anchors.centerIn: parent
-        }
-
-    }
-
-    Canvas {
-        id: drawingCanvas
-        anchors.fill: parent
-
-        onPaint: {
-
-        }
-    }
-
-    MouseArea {
-        id: canvasid
-        anchors.fill: parent
-        onClicked: {
-            if(!startBtn.enabled){
-                clearCanvas();
 
             }
-
-
-            var ctx = drawingCanvas.getContext("2d");
-
-            var obj = {"x":Math.round(mouseX), "y":Math.round(mouseY)};
-            drawCircle(ctx, obj, "red");
-            drawingCanvas.requestPaint();
-
-            cities.push(obj);
-            console.log(approxFacade);
-            approxFacade.setCity(Math.round(mouseX), Math.round(mouseY));
-            city_count.text = cities.length
         }
+
+
     }
 }

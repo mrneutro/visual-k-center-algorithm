@@ -18,7 +18,90 @@ BruteForceResolver::BruteForceResolver(QList<City *> cities, int center_count)
     _center_count = center_count;
 }
 
+BruteForceResolver::~BruteForceResolver()
+{
+    if(_map!=nullptr){
+        delete _map;
+    }
+
+    foreach (City* c, _cities) {
+        delete c;
+    }
+
+    foreach (Warehouse* wh, _solutions) {
+        delete wh;
+    }
+}
+
 QList<Warehouse *> BruteForceResolver::resolve_immediatly()
+{
+    optimize_input();
+
+    emit progressMaxVal(_possible_solutions = Utils::choose(_width*_height, _center_count)); // \todo solve implicit conversation from quint64 to int
+
+    _map = (char*)malloc(_width*_height);
+    if(!_map){
+        qFatal("Cant allocate memory");
+    }
+
+    memset(_map, 'E', _width*_height);
+    memset(_map, 'F', _center_count);
+    _map[_width*_height]=0x00;
+
+    calc(_map);
+
+    free(_map);
+    _map = nullptr;
+
+    return _solutions;
+}
+
+void BruteForceResolver::fill(int *rep_char,char *temp_buff) {
+    if(stop) return;
+
+    int z=1;
+    //loop on the chars, and check if should use them
+    for (int i=0; i<256; i++)
+        if (rep_char[i] != 0) {
+            int l=strlen(temp_buff);
+            //printf("%d\n", l);
+            temp_buff[l]=i; // puts i-character(ascii) to output string
+            rep_char[i]--; //decrements i-charcter count
+            fill(rep_char,temp_buff);
+
+            //restore the situation
+            temp_buff[l]=0;
+            rep_char[i]++;
+            z=0;
+        }
+    if (z==1){
+        //        clock_t end = clock();
+        //        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+
+        //        start = clock();
+        evaluate_solution(temp_buff);
+        //        printf("%s\n", temp_buff);
+    }
+}
+
+void BruteForceResolver::calc(const char *str) {
+    int repetion_of_char[256]={0};
+    int l=strlen(str);
+    qDebug() << "Strlen" << l;
+    char* temp_buff =(char*)malloc(l+1);
+    if(temp_buff == NULL){
+        qDebug() << "Allocation 2 failed";
+    }
+    memset(temp_buff, 0x00, l+1);
+
+    while(*str){
+        repetion_of_char[*str++]++; // count how many ripetitions of chars are
+    }
+
+    fill(repetion_of_char,temp_buff);
+}
+
+void BruteForceResolver::optimize_input()
 {
     City* xmin;
     City* xmax;
@@ -42,104 +125,35 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
         }
     }
 
-    shiftx = xmin->x();
-    shifty = ymin->y();
+    _shiftx = xmin->x();
+    _shifty = ymin->y();
 
-    width = xmax->x()-xmin->x()+1;
-    height = ymax->y()-ymin->y()+1;
-
-    qDebug() << "W:" << width << " H:" << height;
-    unsigned long long max_count = Utils::choose(width*height, _center_count);
-
-    qDebug() << max_count;
-    possible_solutions = max_count; // \todo fare con questo qualcosa
-
-    qDebug() << "Possible solutions" << possible_solutions;
-    emit progressMaxVal(possible_solutions);
-
-    char* map = (char*)malloc(width*height);
-    if(map == NULL){
-        qDebug() << "Alloc failed";
-    }
-
-    memset(map, 'E', width*height);
-    memset(map, 'F', _center_count);
-    map[width*height]=0x00;
-    qDebug() << "Start calc";
-    calc(map);
-
-    return _solutions;
-}
-
-void BruteForceResolver::fill(int *rep_char,char *temp_buff) {
-    int z=1;
-    //loop on the chars, and check if should use them
-    for (int i=0; i<256; i++)
-        if (rep_char[i] != 0) {
-            int l=strlen(temp_buff);
-            //printf("%d\n", l);
-            temp_buff[l]=i; // puts i-character(ascii) to output string
-            rep_char[i]--; //decrements i-charcter count
-            fill(rep_char,temp_buff);
-
-            //restore the situation
-            temp_buff[l]=0;
-            rep_char[i]++;
-            z=0;
-        }
-    if (z==1){
-//        clock_t end = clock();
-//        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-
-//        start = clock();
-        evaluate_solution(temp_buff);
-//        printf("%s\n", temp_buff);
-    }
-}
-
-void BruteForceResolver::calc(const char *str) {
-    int repetion_of_char[256]={0};
-    int l=strlen(str);
-    qDebug() << "Strlen" << l;
-    char* temp_buff =(char*)malloc(l+1);
-    if(temp_buff == NULL){
-        qDebug() << "Allocation 2 failed";
-    }
-    memset(temp_buff, 0x00, l+1);
-
-    while(*str){
-        repetion_of_char[*str++]++; // count how many ripetitions of chars are
-    }
-
-    fill(repetion_of_char,temp_buff);
+    _width = xmax->x()-xmin->x()+1;
+    _height = ymax->y()-ymin->y()+1;
 }
 
 void BruteForceResolver::evaluate_solution(const char *solution)
 {
     QList<Warehouse*> whs;
     int len = strlen(solution);
-    //qDebug() << QString(solution);
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%width)+shiftx;
-            int y = (i/width)+shifty;
+            int x = (i%_width)+_shiftx;
+            int y = (i/_width)+_shifty;
 
-            Warehouse *wh = new Warehouse(x, y, 0);
-            whs.append(wh);
+            whs.append(new Warehouse(x, y, 0));
         }
     }
 
     int current_max_dist = Utils::get_max_dist(_cities, whs);
-    if(current_max_dist < min_solution){
+    if(current_max_dist < _min_solution){
         _solutions = whs;
-        min_solution = current_max_dist;
-        qDebug() << "Current min solution";
-        qDebug() << QString(solution);
+        _min_solution = current_max_dist;
     }else{
         for(int i=0; i<whs.count(); i++){
             delete whs.at(i);
         }
     }
-    emit progressUpdate(++current_position);
+    emit progressUpdate(++_current_position);
 }
