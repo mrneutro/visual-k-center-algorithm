@@ -33,7 +33,7 @@ ApplicationWindow {
             }
 
             drawingCanvas.requestPaint();
-            pbar.visible = false;
+            stateId.state = "results"
         }
         onProgressUpdate: progUpdate(val);
         onProgressMaxVal: progMax(val);
@@ -65,7 +65,7 @@ ApplicationWindow {
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.moveTo(obj.x, obj.y);
-        ctx.arc(obj.x, obj.y, 1, 0, Math.PI * 2, false);
+        ctx.arc(obj.x, obj.y, 4, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
     }
@@ -85,7 +85,7 @@ ApplicationWindow {
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.moveTo(obj.x, obj.y);
-        ctx.arc(obj.x, obj.y, 1, 0, Math.PI * 2, false);
+        ctx.arc(obj.x, obj.y, 4, 0, Math.PI * 2, false);
         ctx.lineTo(obj.x, obj.y);
         ctx.fill();
         drawingCanvas.requestPaint();
@@ -122,7 +122,6 @@ ApplicationWindow {
     }
 
     function clearCanvas(){
-        startBtn.enabled = true
         var width = drawingCanvas.width;
         var height = drawingCanvas.height;
         var ctx = drawingCanvas.getContext("2d");
@@ -148,6 +147,8 @@ ApplicationWindow {
 
         drawingCanvas.requestPaint();
     }
+
+
 
     Dialog {
         id: dialog
@@ -197,28 +198,29 @@ ApplicationWindow {
 
     Component.onCompleted: {
         approxFacade.init();
+        stateId.state = "config"
+    }
+
+    Item {
+        id: stateId
+        states: [
+            State {
+                name: "config"
+            },
+            State {
+                name: "working"
+            },
+            State {
+                name: "results"
+            }
+        ]
     }
 
     Row {
+
         id: mainPan
         width: 600
         height: 600
-        ProgressBar {
-            id: pbar
-            visible: false
-            value: 50
-            width: parent.width
-            minimumValue: 0
-            maximumValue: k_centers.text - 1
-
-            Text {
-                id: progressTxt
-                text: "0/0";
-                color: "black"
-                anchors.centerIn: parent
-            }
-
-        }
 
         Canvas {
             id: drawingCanvas
@@ -244,7 +246,6 @@ ApplicationWindow {
                     drawingCanvas.requestPaint();
 
                     cities.push(obj);
-                    console.log(approxFacade);
                     approxFacade.setCity(Math.round(mouseX), Math.round(mouseY));
                     city_count.text = cities.length
                 }
@@ -302,6 +303,7 @@ ApplicationWindow {
                         id: k_centers
                         text: "2"
                         Layout.preferredWidth: 40
+                        enabled: stateId.state == "config"
                     }
 
                     Text{
@@ -313,6 +315,7 @@ ApplicationWindow {
                         visible: true
                         width: 100
                         model: [ "2Approx", "Bruteforce"]
+                        enabled: stateId.state == "config"
                     }
                 }
 
@@ -338,8 +341,10 @@ ApplicationWindow {
                     visible: true;
                     implicitWidth: 92
                     text: "Clear"
+                    enabled: stateId.state == "config" || stateId.state == "results"
                     onClicked: {
                         clearCanvas();
+                        stateId.state = "config"
                     }
                 }
 
@@ -348,6 +353,7 @@ ApplicationWindow {
                     visible: true
                     implicitWidth: 92
                     text: "Random"
+                    enabled: stateId.state == "config" || stateId.state == "results"
                     onClicked: {
                         randomDialog.visible = true
                     }
@@ -367,52 +373,67 @@ ApplicationWindow {
                 title: "Run"
             }
 
-            Button {
-                id: startBtn
-                text: "Resolve immediate"
-                implicitWidth: 190
-                onClicked: {
-                    if(cities.length > 0){
-                        if(k_centers.text > 0){
-                            startBtn.enabled = false
-                            approxFacade.setCenterCount(k_centers.text);
-                            pbar.visible = true;
-                            //                    startBtn.visible = false;
-                            //                    stepBtn.visible = true;
-                            //                    k_centers.enabled = false;
-                            //                    finishBtn.visible = true;
-                            approxFacade.resolveImmediate(algorithm.currentText);
-                            stopBtn.visible = true;
-                            startBtn.visible = false;
+            ColumnLayout {
+                id: runningGroup
+
+
+                Button {
+                    id: startBtn
+                    text: "Resolve immediate"
+                    implicitWidth: 190
+                    enabled: stateId.state == "config"
+
+                    onClicked: {
+                        if(cities.length > 0){
+                            if(k_centers.text > 0){
+                                stateId.state = "working"
+                                approxFacade.setCenterCount(k_centers.text);
+                                approxFacade.resolveImmediate(algorithm.currentText);
+                            }else{
+                                dialog.flash("Impossible run algorithm with 0 centers!");
+                            }
                         }else{
-                            dialog.flash("Impossible run algorithm with 0 centers!");
+                            dialog.flash("City count is not valid");
                         }
-                    }else{
-                        dialog.flash("City count is not valid");
+
+                    }
+                }
+
+                Button {
+                    id: startBtnSbS
+                    text: "Resolve step-by-step"
+                    implicitWidth: 190
+                    enabled: stateId.state == "config"
+                }
+
+                ProgressBar {
+                    id: pbar
+                    visible: stateId.state == "working"
+
+                    implicitWidth: 190
+
+
+                    Text {
+                        id: progressTxt
+                        text: "";
+                        color: "black"
+                        anchors.centerIn: parent
                     }
 
                 }
-            }
 
-            Button {
-                id: startBtnSbS
-                text: "Resolve step-by-step"
-                implicitWidth: 190
-            }
+                Button {
+                    id: stopBtn
+                    visible: stateId.state == "working"
+                    text: "STOP"
+                    implicitWidth: 190
 
-            Button {
-                id: stopBtn
-                visible: false
-                text: "STOP"
-                implicitWidth: 190
-                onClicked: {
-                    approxFacade.stop();
-                    startBtn.visible = true;
-                    stopBtn.visible = false;
-                    pbar.visible = false;
-                }
+                    onClicked: {
+                        approxFacade.stop();
+                        stateId.state = "results"
+                    }
 
-                style: ButtonStyle {
+                    style: ButtonStyle {
                         background: Rectangle {
                             implicitWidth: 100
                             implicitHeight: 25
@@ -425,10 +446,23 @@ ApplicationWindow {
                             }
                         }
                     }
+                }
             }
 
+            Item {
+                id: spacer3
+                anchors.top: runningGroup.bottom
+                width: 100
+                height: 10
+            }
+
+            UnderlinedText {
+                id: statisticTitle
+                anchors.top: spacer3.bottom
+                title: "Statistic"
+            }
+
+
         }
-
-
     }
 }
