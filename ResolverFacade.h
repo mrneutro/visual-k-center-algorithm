@@ -22,11 +22,14 @@ public:
     Q_INVOKABLE void stop(){
         _resolver->stop = true;
     }
+    Q_INVOKABLE void setPrecision(int precision);
+
 private:
     CenterResolver *_resolver = nullptr;
     QList<City*> _cities;
     int _center_count = 0;
     QList<Warehouse*> _solution;
+    int _precision = 0;
 signals:
     void dataAvailable();
     void progressUpdate(int val);

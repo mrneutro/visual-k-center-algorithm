@@ -39,6 +39,7 @@ void ResolverFacade::resolveImmediate(QString algo)
             this->_resolver = new ApproxResolver(this->_cities, this->_center_count);
         }else{
             this->_resolver = new BruteForceResolver(this->_cities, this->_center_count);
+            ((BruteForceResolver*)this->_resolver)->setPrecision(_precision);
         }
         connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         connect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
@@ -62,4 +63,9 @@ int ResolverFacade::getY(int item)
 int ResolverFacade::getR(int item)
 {
     return _solution.at(item)->radius();
+}
+
+void ResolverFacade::setPrecision(int precision)
+{
+    _precision = precision;
 }

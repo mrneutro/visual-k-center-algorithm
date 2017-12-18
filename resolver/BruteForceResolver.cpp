@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "Utils.h"
+#include <math.h>
 
 unsigned int count = 0;
 clock_t start;
@@ -130,6 +131,14 @@ void BruteForceResolver::optimize_input()
 
     _width = xmax->x()-xmin->x()+1;
     _height = ymax->y()-ymin->y()+1;
+
+    _height = _height/_precision;
+    _width = _width/_precision;
+}
+
+void BruteForceResolver::setPrecision(int precision)
+{
+    _precision = precision*cos(45)*2;
 }
 
 void BruteForceResolver::evaluate_solution(const char *solution)
@@ -139,8 +148,8 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%_width)+_shiftx;
-            int y = (i/_width)+_shifty;
+            int x = (i%(_width*_precision))+_shiftx;
+            int y = (i/_width*_precision)+_shifty;
 
             whs.append(new Warehouse(x, y, 0));
         }

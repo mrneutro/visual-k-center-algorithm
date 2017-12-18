@@ -317,6 +317,20 @@ ApplicationWindow {
                         model: [ "2Approx", "Bruteforce"]
                         enabled: stateId.state == "config"
                     }
+
+                    Text{
+                        id: precisionLbl
+                        text: "Precision:"
+                        visible: algorithm.currentIndex==1
+                    }
+
+                    TextField {
+                        id: precisionTxt
+                        text: "2"
+                        visible: algorithm.currentIndex==1
+                        Layout.preferredWidth: 40
+                        enabled: stateId.state == "config"
+                    }
                 }
 
             }
@@ -325,7 +339,7 @@ ApplicationWindow {
                 id: spacer1
                 anchors.top: settingsPan.bottom
                 width: 100
-                height: 25
+                height: 35
             }
 
             UnderlinedText {
@@ -388,7 +402,9 @@ ApplicationWindow {
                             if(k_centers.text > 0){
                                 stateId.state = "working"
                                 approxFacade.setCenterCount(k_centers.text);
+                                approxFacade.setPrecision(precisionTxt.text);
                                 approxFacade.resolveImmediate(algorithm.currentText);
+
                             }else{
                                 dialog.flash("Impossible run algorithm with 0 centers!");
                             }
