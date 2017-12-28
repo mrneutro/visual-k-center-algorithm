@@ -426,7 +426,7 @@ ApplicationWindow {
                         text: "2"
                         visible: algorithm.currentIndex==1
                         Layout.preferredWidth: 40
-                        enabled: stateId.state == "config"
+                        enabled: stateId.state == "config" || stateId.state == "results"
                     }
                 }
 
