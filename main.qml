@@ -53,6 +53,20 @@ ApplicationWindow {
 
     property var cities: [];
 
+    function exportCities(){
+        var obj = {"w":window.width, "h":window.height, "c":cities};
+        return JSON.stringify(obj);
+    }
+
+    function importCities(str){
+        var obj = JSON.parse(str);
+        window.width = obj.w;
+        window.height = obj.h;
+        clearCanvas();
+        cities = obj.c;
+        restoreCanvas();
+    }
+
     function progUpdate(val){
         pbar.value = val;
         progressTxt.text = val + "/" + pbar.maximumValue
@@ -227,6 +241,52 @@ ApplicationWindow {
             TextField {
                 id: dencityDialogTxt
                 text: "1"
+            }
+        }
+
+    }
+
+    Dialog {
+        id: importDialog
+        visible: false
+        title: "Choose random cities count"
+
+        standardButtons: StandardButton.Ok
+
+        onAccepted: {
+            importCities(importDialogTxt.text)
+        }
+
+        RowLayout {
+            Text{
+                text: "Import hash:"
+            }
+            TextArea {
+                id: importDialogTxt
+                text: ""
+            }
+        }
+
+    }
+
+    Dialog {
+        id: exportDialog
+        visible: false
+        title: "Choose random cities count"
+
+        standardButtons: StandardButton.Ok
+
+        onAccepted: {
+            visible=false;
+        }
+
+        RowLayout {
+            Text{
+                text: "Hash:"
+            }
+            TextArea {
+                id: exportDialogTxt
+                text: ""
             }
         }
 
@@ -410,6 +470,33 @@ ApplicationWindow {
                     }
                 }
             }
+
+            RowLayout {
+                id: options2Group
+                Button {
+                    id: exportBtn
+                    visible: true
+                    implicitWidth: 92
+                    text: "Export"
+                    enabled: stateId.state == "config" || stateId.state == "results"
+                    onClicked: {
+                        exportDialogTxt.text = exportCities();
+                        exportDialog.visible=true;
+                    }
+                }
+
+                Button {
+                    id: importBtn
+                    visible: true
+                    implicitWidth: 92
+                    text: "Import"
+                    enabled: stateId.state == "config" || stateId.state == "results"
+                    onClicked: {
+                        importDialog.visible=true;
+                    }
+                }
+            }
+
             Button {
                 id: dencityBtn
                 visible: true
@@ -425,7 +512,7 @@ ApplicationWindow {
                 id: spacer2
                 anchors.top: optionsGroup.bottom
                 width: 100
-                height: 35
+                height: 64
             }
 
             UnderlinedText {
