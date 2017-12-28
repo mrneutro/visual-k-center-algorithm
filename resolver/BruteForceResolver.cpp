@@ -24,18 +24,11 @@ BruteForceResolver::~BruteForceResolver()
     if(_map!=nullptr){
         delete _map;
     }
-
-    foreach (City* c, _cities) {
-        delete c;
-    }
-
-    foreach (Warehouse* wh, _solutions) {
-        delete wh;
-    }
 }
 
 QList<Warehouse *> BruteForceResolver::resolve_immediatly()
 {
+    start_timer();
     optimize_input();
 
     emit progressMaxVal(_possible_solutions = Utils::choose(_width*_height, _center_count)); // \todo solve implicit conversation from quint64 to int
@@ -53,6 +46,7 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
 
     free(_map);
     _map = nullptr;
+    stop_timer();
 
     return _solutions;
 }

@@ -22,7 +22,6 @@ private:
     City *fartherst_city_from_centers();
     int dist(const City* c1, const Warehouse* c2);
     NearestCenter* nearest_wh_from(const City *c);
-    int radius = 0;
     City* get_random_city();
 
 };

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <ctime>
 #include <QDebug>
+#include "Utils.h"
 
 ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 {
@@ -13,6 +14,7 @@ ApproxResolver::ApproxResolver(QList<City*> cities, int center_count)
 
 QList<Warehouse *> ApproxResolver::resolve_immediatly()
 {
+    start_timer();
     City *current_city = get_random_city();
     while(_wh.count() < _center_count && current_city != nullptr){ // if current_city is -1 we have no choises
         emit progressUpdate(_wh.count());
@@ -22,7 +24,8 @@ QList<Warehouse *> ApproxResolver::resolve_immediatly()
         _wh.append(wh);
         current_city = fartherst_city_from_centers();
     }
-
+    stop_timer();
+    _min_solution = Utils::get_max_dist(_cities, _wh);
     return _wh;
 }
 

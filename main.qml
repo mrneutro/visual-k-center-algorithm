@@ -18,15 +18,17 @@ ApplicationWindow {
         onDataAvailable: {
             var ctx = drawingCanvas.getContext("2d");
 
+            var point_color = (algorithm.currentIndex==0)?"blue":"orange";
+
             var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
             var r1 = approxFacade.getR(0);
-            addCenter(ctx, c1, "green");
+            addCenter(ctx, c1, point_color);
 
             for(var i = 1; i < k_centers.text; i++){
                 console.log("RADIUS is " + approxFacade.getR(i))
                 var c = {"x":approxFacade.getX(i), "y":approxFacade.getY(i)};
                 var r = approxFacade.getR(i);
-                addCenter(ctx, c, "blue");
+                addCenter(ctx, c, point_color);
                 if(k_centers.text-1 != i){
                     //addRadius(ctx, c, r);
                 }
@@ -34,6 +36,16 @@ ApplicationWindow {
 
             drawingCanvas.requestPaint();
             stateId.state = "results"
+            var time = approxFacade.last_execution_time();
+            outTxt.append("Exec time: " + time + " sec.");
+            if(algorithm.currentIndex == 0){
+                outTxt.append("Sol. qual.:" + approxFacade.solution_quality());
+            }else{
+                outTxt.append("Sol. qual.:" + approxFacade.solution_quality() +"(+ max "+precisionTxt.text+"px err)");
+            }
+
+            //execTime.text = "Time: " + time +" sec.";
+
         }
         onProgressUpdate: progUpdate(val);
         onProgressMaxVal: progMax(val);
@@ -195,6 +207,31 @@ ApplicationWindow {
 
     }
 
+    Dialog {
+        id: dencityDialog
+        visible: false
+        title: "Choose dencity for random generation"
+
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+
+        onAccepted: {
+            dencityDialogTxt.text
+            generateRandomCities(window.width*window.height*dencityDialogTxt.text);
+        }
+
+        onRejected: visible = false
+        RowLayout {
+            Text{
+                text: "Dencity of cities: "
+            }
+            TextField {
+                id: dencityDialogTxt
+                text: "1"
+            }
+        }
+
+    }
+
 
     Component.onCompleted: {
         approxFacade.init();
@@ -315,7 +352,7 @@ ApplicationWindow {
                         visible: true
                         width: 100
                         model: [ "2Approx", "Bruteforce"]
-                        enabled: stateId.state == "config"
+                        enabled: stateId.state == "config" || stateId.state == "results"
                     }
 
                     Text{
@@ -373,12 +410,22 @@ ApplicationWindow {
                     }
                 }
             }
+            Button {
+                id: dencityBtn
+                visible: true
+                implicitWidth: 190
+                text: "Fill with dencity"
+                enabled: stateId.state == "config" || stateId.state == "results"
+                onClicked: {
+                    dencityDialog.visible = true
+                }
+            }
 
             Item {
                 id: spacer2
                 anchors.top: optionsGroup.bottom
                 width: 100
-                height: 10
+                height: 35
             }
 
             UnderlinedText {
@@ -389,17 +436,20 @@ ApplicationWindow {
 
             ColumnLayout {
                 id: runningGroup
+                anchors.topMargin: 10
+                anchors.top: runningTitle.bottom
 
 
                 Button {
                     id: startBtn
                     text: "Resolve immediate"
                     implicitWidth: 190
-                    enabled: stateId.state == "config"
+                    enabled: stateId.state == "config" || stateId.state == "results"
 
                     onClicked: {
                         if(cities.length > 0){
                             if(k_centers.text > 0){
+                                outTxt.append("==START " + algorithm.currentText + "==");
                                 stateId.state = "working"
                                 approxFacade.setCenterCount(k_centers.text);
                                 approxFacade.setPrecision(precisionTxt.text);
@@ -478,6 +528,12 @@ ApplicationWindow {
                 title: "Statistic"
             }
 
+            TextArea {
+                id: outTxt
+                implicitWidth: 190
+                anchors.bottom: parent.bottom
+                text:""
+            }
 
         }
     }

@@ -11,7 +11,21 @@ ResolverFacade::ResolverFacade(QObject *parent) : QObject(parent)
 
 void ResolverFacade::init()
 {
+    foreach(const Warehouse* wh, _solution){
+        delete wh;
+    }
+    foreach(const City* c, _cities){
+        delete c;
+    }
     _cities.clear();
+    _solution.clear();
+}
+
+void ResolverFacade::clear_solutions()
+{
+    foreach(const Warehouse* wh, _solution){
+        delete wh;
+    }
     _solution.clear();
 }
 
@@ -47,6 +61,7 @@ void ResolverFacade::resolveImmediate(QString algo)
         emit dataAvailable();
         disconnect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         disconnect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
+
     });
 }
 
@@ -68,4 +83,14 @@ int ResolverFacade::getR(int item)
 void ResolverFacade::setPrecision(int precision)
 {
     _precision = precision;
+}
+
+double ResolverFacade::last_execution_time()
+{
+    return this->_resolver->last_execution_time();
+}
+
+int ResolverFacade::solution_quality()
+{
+    return this->_resolver->solution_quality();
 }

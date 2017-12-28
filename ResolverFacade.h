@@ -13,6 +13,7 @@ class ResolverFacade : public QObject
 public:
     explicit ResolverFacade(QObject *parent = nullptr);
     Q_INVOKABLE void init();
+    Q_INVOKABLE void clear_solutions();
     Q_INVOKABLE void setCity(int x, int y);
     Q_INVOKABLE void setCenterCount(int k);
     Q_INVOKABLE void resolveImmediate(QString algo);
@@ -23,6 +24,8 @@ public:
         _resolver->stop = true;
     }
     Q_INVOKABLE void setPrecision(int precision);
+    Q_INVOKABLE double last_execution_time();
+    Q_INVOKABLE int solution_quality();
 
 private:
     CenterResolver *_resolver = nullptr;

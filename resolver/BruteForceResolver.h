@@ -24,7 +24,7 @@ private:
     int _shifty=0;
     int _width = 0;
     int _height = 0;
-    int _min_solution = INT_MAX;
+
     quint64 _possible_solutions = 0;
     int _current_position = 0;
     char *_map = nullptr;
