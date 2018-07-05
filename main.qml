@@ -64,6 +64,10 @@ ApplicationWindow {
         window.height = obj.h;
         clearCanvas();
         cities = obj.c;
+        cities.forEach(function(element) {
+            console.log(element);
+            approxFacade.setCity(element.x, element.y);
+          });
         restoreCanvas();
     }
 

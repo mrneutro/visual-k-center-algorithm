@@ -142,15 +142,17 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%(_width*_precision))+_shiftx;
-            int y = (i/_width*_precision)+_shifty;
+            int x = (i%(_width*_precision))+_shiftx+_precision/2;
+            int y = (i/_width*_precision)+_shifty+_precision/2;
 
             whs.append(new Warehouse(x, y, 0));
         }
     }
-
     int current_max_dist = Utils::get_max_dist(_cities, whs);
+
     if(current_max_dist < _min_solution){
+        qDebug() << "New current max found: " << current_max_dist;
+        qDebug() << whs;
         _solutions = whs;
         _min_solution = current_max_dist;
     }else{

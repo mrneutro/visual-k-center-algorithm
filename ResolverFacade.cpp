@@ -67,12 +67,22 @@ void ResolverFacade::resolveImmediate(QString algo)
 
 int ResolverFacade::getX(int item)
 {
-    return _solution.at(item)->x();
+    if(_solution.length() > item){
+        return _solution.at(item)->x();
+    }else{
+        qWarning() << "OUT OF RANGE";
+        return 0;
+    }
 }
 
 int ResolverFacade::getY(int item)
 {
-    return _solution.at(item)->y();
+    if(_solution.length() > item){
+        return _solution.at(item)->y();
+    }else{
+        qWarning() << "OUT OF RANGE";
+        return 0;
+    }
 }
 
 int ResolverFacade::getR(int item)
