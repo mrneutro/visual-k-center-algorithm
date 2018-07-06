@@ -13,6 +13,8 @@ ApplicationWindow {
     height: 600
     title: qsTr("Metric k-center solver")
 
+    property int lastVal: 0
+
     Connections {
         target: approxFacade
         onDataAvailable: {
@@ -50,6 +52,33 @@ ApplicationWindow {
         onProgressUpdate: progUpdate(val);
         onProgressMaxVal: progMax(val);
     }
+
+    Timer {
+            interval: 1000; running: true; repeat: true
+            onTriggered: {
+                var calcpersec = pbar.value - lastVal;
+                lastVal = pbar.value;
+                progressSpeed.text = "Calc per sec: "+ calcpersec;
+                var timeinsec = (pbar.maximumValue-pbar.value)/calcpersec;
+                console.log(timeinsec);
+
+                if(timeinsec > 60*60*24*365*1000){
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365*1000) +" millenni";
+                }else if(timeinsec > 60*60*24*365){
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365) +" anni";
+                }else if(timeinsec > 60*60*24){
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24) +" giorni";
+                }else if(timeinsec > 60*60){
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60) +" ore";
+                }else if(timeinsec > 60){
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60) +" min";
+                }else{
+                    estimatedTime.text = "Est. time: " + Math.round(timeinsec) +" sec";
+                }
+
+
+            }
+        }
 
     property var cities: [];
 
@@ -163,8 +192,8 @@ ApplicationWindow {
     }
 
     function generateRandomCities(count){
-        var width = drawingCanvas.width;
-        var height = drawingCanvas.height;
+        var width = 100;
+        var height = 100;
         var ctx = drawingCanvas.getContext("2d");
 
 
@@ -300,6 +329,7 @@ ApplicationWindow {
     Component.onCompleted: {
         approxFacade.init();
         stateId.state = "config"
+        algorithm.currentIndex=1
     }
 
     Item {
@@ -617,6 +647,16 @@ ApplicationWindow {
                 id: statisticTitle
                 anchors.top: spacer3.bottom
                 title: "Statistic"
+            }
+
+            Text{
+                id: progressSpeed
+                text: "Calc per sec: ";
+            }
+
+            Text{
+                id: estimatedTime
+                text: "Est. time: ";
             }
 
             TextArea {
