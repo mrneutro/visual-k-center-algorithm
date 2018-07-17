@@ -90,7 +90,7 @@ int ResolverFacade::getR(int item)
     return _solution.at(item)->radius();
 }
 
-void ResolverFacade::setPrecision(int precision)
+void ResolverFacade::setPrecision(QString precision)
 {
     _precision = precision;
 }

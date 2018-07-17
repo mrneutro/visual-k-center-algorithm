@@ -23,7 +23,7 @@ public:
     Q_INVOKABLE void stop(){
         _resolver->stop = true;
     }
-    Q_INVOKABLE void setPrecision(int precision);
+    Q_INVOKABLE void setPrecision(QString precision);
     Q_INVOKABLE double last_execution_time();
     Q_INVOKABLE int solution_quality();
 
@@ -32,7 +32,7 @@ private:
     QList<City*> _cities;
     int _center_count = 0;
     QList<Warehouse*> _solution;
-    int _precision = 0;
+    QString _precision;
 signals:
     void dataAvailable();
     void progressUpdate(int val);

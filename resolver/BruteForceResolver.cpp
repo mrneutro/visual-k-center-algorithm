@@ -126,13 +126,16 @@ void BruteForceResolver::optimize_input()
     _width = xmax->x()-xmin->x()+1;
     _height = ymax->y()-ymin->y()+1;
 
-    _height = _height/_precision;
-    _width = _width/_precision;
+    _precision_density = _precision/100*_width*_height;
+
+    _height = _height/_precision_density;
+    _width = _width/_precision_density;
 }
 
-void BruteForceResolver::setPrecision(int precision)
+void BruteForceResolver::setPrecision(QString precision)
 {
-    _precision = precision*cos(45)*2;
+    _precision = precision.toFloat()*cos(45)*2;
+//    _precision = precision.toFloat();
 }
 
 void BruteForceResolver::evaluate_solution(const char *solution)
@@ -142,8 +145,8 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int x = (i%(_width*_precision))+_shiftx+_precision/2;
-            int y = (i/_width*_precision)+_shifty+_precision/2;
+            int x = ((i*_precision_density)%(_width*_precision_density))+_shiftx+_precision_density/2;
+            int y = ((i*_precision_density)/(_width*_precision_density))+_shifty+_precision_density/2;
 
             whs.append(new Warehouse(x, y, 0));
         }

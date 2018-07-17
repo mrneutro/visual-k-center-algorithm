@@ -9,7 +9,7 @@ public:
     ~BruteForceResolver();
     QList<Warehouse *> resolve_immediatly() override;
 
-    void setPrecision(int precision);
+    void setPrecision(QString precision);
 
 private:
     void fill(int *rep_char,char *temp_buff);
@@ -28,7 +28,8 @@ private:
     quint64 _possible_solutions = 0;
     int _current_position = 0;
     char *_map = nullptr;
-    int _precision = 1;
+    float _precision = 1;
+    int _precision_density = 0;
 };
 
 #endif // BRUTEFORCERESOLVER_H

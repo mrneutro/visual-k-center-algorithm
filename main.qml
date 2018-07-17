@@ -192,8 +192,8 @@ ApplicationWindow {
     }
 
     function generateRandomCities(count){
-        var width = 100;
-        var height = 100;
+        var width = drawingCanvas.width;
+        var height = drawingCanvas.height;
         var ctx = drawingCanvas.getContext("2d");
 
 
@@ -263,7 +263,7 @@ ApplicationWindow {
 
         onAccepted: {
             dencityDialogTxt.text
-            generateRandomCities(window.width*window.height*dencityDialogTxt.text);
+            generateRandomCities(window.width*window.height*(dencityDialogTxt.text/100));
         }
 
         onRejected: visible = false
@@ -573,7 +573,8 @@ ApplicationWindow {
                                 outTxt.append("==START " + algorithm.currentText + "==");
                                 stateId.state = "working"
                                 approxFacade.setCenterCount(k_centers.text);
-                                approxFacade.setPrecision(precisionTxt.text);
+                                var real = Number(precisionTxt.text)
+                                approxFacade.setPrecision(real);
                                 approxFacade.resolveImmediate(algorithm.currentText);
 
                             }else{
