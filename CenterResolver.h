@@ -33,12 +33,20 @@ public:
     }
 
 
+    int _precision_density = 0;
+    int precision_density() {
+        return _precision_density;
+    }
+
 private:
     clock_t timer_begin = clock();
     clock_t timer_end = clock();
 signals:
     void progressUpdate(int val);
     void progressMaxVal(int val);
+    void error(QString val);
+    void drawLine(int x, int y,int toX, int toY);
 };
+
 
 #endif // CENTERRESOLVER_H

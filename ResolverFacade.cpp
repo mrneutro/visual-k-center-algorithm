@@ -19,6 +19,7 @@ void ResolverFacade::init()
     }
     _cities.clear();
     _solution.clear();
+
 }
 
 void ResolverFacade::clear_solutions()
@@ -57,10 +58,16 @@ void ResolverFacade::resolveImmediate(QString algo)
         }
         connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         connect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
+        connect(_resolver, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
+        connect(_resolver, SIGNAL(drawLine(int,int,int,int)), this, SIGNAL(drawLine(int,int,int,int)));
         this->_solution = this->_resolver->resolve_immediatly();
-        emit dataAvailable();
+        if(this->_solution.length() != 0){
+            emit dataAvailable();
+        }
         disconnect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         disconnect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
+        disconnect(_resolver, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
+        disconnect(_resolver, SIGNAL(drawLine(x,y,toX,toY)), this, SIGNAL(drawLine(x,y,toX,toY)));
 
     });
 }
@@ -103,4 +110,9 @@ double ResolverFacade::last_execution_time()
 int ResolverFacade::solution_quality()
 {
     return this->_resolver->solution_quality();
+}
+
+float ResolverFacade::getPrecitionDensity()
+{
+    return this->_resolver->precision_density();
 }

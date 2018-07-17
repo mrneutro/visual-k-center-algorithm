@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE void setPrecision(QString precision);
     Q_INVOKABLE double last_execution_time();
     Q_INVOKABLE int solution_quality();
+    Q_INVOKABLE float getPrecitionDensity();
 
 private:
     CenterResolver *_resolver = nullptr;
@@ -37,6 +38,8 @@ signals:
     void dataAvailable();
     void progressUpdate(int val);
     void progressMaxVal(int val);
+    void error(QString err);
+    void drawLine(int x, int y,int toX, int toY);
 public slots:
 };
 

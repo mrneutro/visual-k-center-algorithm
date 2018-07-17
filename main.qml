@@ -43,7 +43,7 @@ ApplicationWindow {
             if(algorithm.currentIndex == 0){
                 outTxt.append("Sol. qual.:" + approxFacade.solution_quality());
             }else{
-                outTxt.append("Sol. qual.:" + approxFacade.solution_quality() +"(+ max "+precisionTxt.text+"px err)");
+                outTxt.append("Sol. qual.:" + approxFacade.solution_quality() +"(+ max "+approxFacade.getPrecitionDensity()+"px err)");
             }
 
             //execTime.text = "Time: " + time +" sec.";
@@ -52,33 +52,68 @@ ApplicationWindow {
         onProgressUpdate: progUpdate(val);
         onProgressMaxVal: progMax(val);
     }
+    Connections {
+        target: approxFacade
+        onError: errorHandle(err)
+        onDrawLine: drawLineXY(x, y, toX, toY)
+    }
+
+    function drawLineXY(x, y, toX, toY){
+        console.log("Drawing line from "+x+" "+y+" to "+toX +" "+toY)
+        var ctx = drawingCanvas.getContext("2d");
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "green"
+        ctx.beginPath()
+        ctx.moveTo(x,y)
+        ctx.lineTo(toX, toY)
+        ctx.closePath()
+        ctx.stroke()
+        drawingCanvas.requestPaint();
+    }
+
+    function errorHandle(err){
+        approxFacade.stop();
+        stateId.state = "results"
+        messageDialog.text = err;
+        messageDialog.visible = true
+    }
+
+    MessageDialog {
+        id: messageDialog
+        title: "Error"
+        text: "It's so cool that you are using Qt Quick."
+        onAccepted: {
+            console.log("And of course you could only agree.")
+            messageDialog.close()
+        }
+    }
 
     Timer {
-            interval: 1000; running: true; repeat: true
-            onTriggered: {
-                var calcpersec = pbar.value - lastVal;
-                lastVal = pbar.value;
-                progressSpeed.text = "Calc per sec: "+ calcpersec;
-                var timeinsec = (pbar.maximumValue-pbar.value)/calcpersec;
-                console.log(timeinsec);
+        interval: 1000; running: true; repeat: true
+        onTriggered: {
+            var calcpersec = pbar.value - lastVal;
+            lastVal = pbar.value;
+            progressSpeed.text = "Calc per sec: "+ calcpersec;
+            var timeinsec = (pbar.maximumValue-pbar.value)/calcpersec;
+            console.log(timeinsec);
 
-                if(timeinsec > 60*60*24*365*1000){
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365*1000) +" millenni";
-                }else if(timeinsec > 60*60*24*365){
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365) +" anni";
-                }else if(timeinsec > 60*60*24){
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24) +" giorni";
-                }else if(timeinsec > 60*60){
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60) +" ore";
-                }else if(timeinsec > 60){
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec/60) +" min";
-                }else{
-                    estimatedTime.text = "Est. time: " + Math.round(timeinsec) +" sec";
-                }
-
-
+            if(timeinsec > 60*60*24*365*1000){
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365*1000) +" millenni";
+            }else if(timeinsec > 60*60*24*365){
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24*365) +" anni";
+            }else if(timeinsec > 60*60*24){
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60*24) +" giorni";
+            }else if(timeinsec > 60*60){
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec/60*60) +" ore";
+            }else if(timeinsec > 60){
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec/60) +" min";
+            }else{
+                estimatedTime.text = "Est. time: " + Math.round(timeinsec) +" sec";
             }
+
+
         }
+    }
 
     property var cities: [];
 
@@ -96,7 +131,7 @@ ApplicationWindow {
         cities.forEach(function(element) {
             console.log(element);
             approxFacade.setCity(element.x, element.y);
-          });
+        });
         restoreCanvas();
     }
 
@@ -592,6 +627,7 @@ ApplicationWindow {
                     text: "Resolve step-by-step"
                     implicitWidth: 190
                     enabled: stateId.state == "config"
+                    visible: false
                 }
 
                 ProgressBar {

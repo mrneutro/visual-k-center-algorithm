@@ -31,6 +31,12 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     start_timer();
     optimize_input();
 
+    if(_width == 0 || _height == 0){
+        QString errormsg = "Presition is too high to process, because area is "+ QString::number(_area) +"px, so density is: " + QString::number(_precision_density) + "with canvas size " + QString::number(_owidth)+ "x" + QString::number(_oheight) + ". Try to change density percentage";
+        emit error(errormsg);
+        return QList<Warehouse*>();
+    }
+
     emit progressMaxVal(_possible_solutions = Utils::choose(_width*_height, _center_count)); // \todo solve implicit conversation from quint64 to int
 
     _map = (char*)malloc(_width*_height);
@@ -47,6 +53,8 @@ QList<Warehouse *> BruteForceResolver::resolve_immediatly()
     free(_map);
     _map = nullptr;
     stop_timer();
+
+
 
     return _solutions;
 }
@@ -123,19 +131,38 @@ void BruteForceResolver::optimize_input()
     _shiftx = xmin->x();
     _shifty = ymin->y();
 
+
     _width = xmax->x()-xmin->x()+1;
     _height = ymax->y()-ymin->y()+1;
+
+    emit drawLine(_shiftx, _shifty, _shiftx+_width, _shifty);
+    emit drawLine(_shiftx, _shifty, _shiftx, _shifty+_height);
+    emit drawLine(_shiftx+_width, _shifty, _shiftx+_width, _shifty+_height);
+    emit drawLine(_shiftx, _shifty+_height, _shiftx+_width, _shifty+_height);
+
+    _owidth = _width;
+    _oheight = _height;
+
+    _area = _width*_height;
 
     _precision_density = _precision/100*_width*_height;
 
     _height = _height/_precision_density;
     _width = _width/_precision_density;
+
+
+    for(int i = 0; i < _width; i++){
+       emit drawLine(_shiftx+i*_precision_density, _shifty, _shiftx+i*_precision_density, _shifty+_oheight);
+    }
+    for(int i = 0; i < _height; i++){
+       emit drawLine(_shiftx, _shifty+i*_precision_density, _shiftx+_owidth, _shifty+i*_precision_density);
+    }
 }
 
 void BruteForceResolver::setPrecision(QString precision)
 {
     _precision = precision.toFloat()*cos(45)*2;
-//    _precision = precision.toFloat();
+    //    _precision = precision.toFloat();
 }
 
 void BruteForceResolver::evaluate_solution(const char *solution)
@@ -152,7 +179,7 @@ void BruteForceResolver::evaluate_solution(const char *solution)
         }
     }
     int current_max_dist = Utils::get_max_dist(_cities, whs);
-
+    qDebug() << current_max_dist;
     if(current_max_dist < _min_solution){
         qDebug() << "New current max found: " << current_max_dist;
         qDebug() << whs;
@@ -163,5 +190,8 @@ void BruteForceResolver::evaluate_solution(const char *solution)
             delete whs.at(i);
         }
     }
-    emit progressUpdate(++_current_position);
+    _current_position++;
+    if(_current_position%100 == 0){
+        emit progressUpdate(_current_position);
+    }
 }

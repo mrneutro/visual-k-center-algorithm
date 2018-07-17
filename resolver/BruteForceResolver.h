@@ -24,12 +24,14 @@ private:
     int _shifty=0;
     int _width = 0;
     int _height = 0;
+    int _area = 0;
+    int _owidth=0;
+    int _oheight=0;
 
     quint64 _possible_solutions = 0;
     int _current_position = 0;
     char *_map = nullptr;
     float _precision = 1;
-    int _precision_density = 0;
 };
 
 #endif // BRUTEFORCERESOLVER_H
