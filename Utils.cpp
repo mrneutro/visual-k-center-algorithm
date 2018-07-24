@@ -14,10 +14,10 @@ uint Utils::get_max_dist(QList<City *> cities, QList<Warehouse *> wh)
                 min_for_victim = curr_dist;
             }
         }
-        maxDist += min_for_victim;
-//        if(min_for_victim > maxDist){
-//            maxDist = min_for_victim;
-//        }
+//        maxDist += min_for_victim;
+        if(min_for_victim > maxDist){
+            maxDist = min_for_victim;
+        }
     }
 
     return maxDist;

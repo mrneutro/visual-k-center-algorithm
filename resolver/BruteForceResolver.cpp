@@ -177,7 +177,7 @@ void BruteForceResolver::evaluate_solution(const char *solution)
             int molt = i*_precision_density;
             int molt2 = _width*_precision_density;
             int x = ((molt)%(molt2))+_shiftx+_precision_density/2;
-            int y = ((molt)/(molt2))+_shifty+_precision_density/2;
+            int y = ((molt)/(molt2)*_precision_density)+_shifty+_precision_density/2;
 
             whs.append(new Warehouse(x, y, 0));
         }
