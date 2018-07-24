@@ -89,7 +89,7 @@ ApplicationWindow {
     }
 
     Timer {
-        interval: 1000; running: true; repeat: true
+        interval: 1000; running: false; repeat: true
         onTriggered: {
             var calcpersec = pbar.value - lastVal;
             lastVal = pbar.value;

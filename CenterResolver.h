@@ -33,8 +33,8 @@ public:
     }
 
 
-    int _precision_density = 0;
-    int precision_density() {
+    float _precision_density = 0;
+    float precision_density() {
         return _precision_density;
     }
 
