@@ -135,10 +135,10 @@ void BruteForceResolver::optimize_input()
     _width = xmax->x()-xmin->x()+1;
     _height = ymax->y()-ymin->y()+1;
 
-    emit drawLine(_shiftx, _shifty, _shiftx+_width, _shifty);
-    emit drawLine(_shiftx, _shifty, _shiftx, _shifty+_height);
-    emit drawLine(_shiftx+_width, _shifty, _shiftx+_width, _shifty+_height);
-    emit drawLine(_shiftx, _shifty+_height, _shiftx+_width, _shifty+_height);
+//    emit drawLine(_shiftx, _shifty, _shiftx+_width, _shifty);
+//    emit drawLine(_shiftx, _shifty, _shiftx, _shifty+_height);
+//    emit drawLine(_shiftx+_width, _shifty, _shiftx+_width, _shifty+_height);
+//    emit drawLine(_shiftx, _shifty+_height, _shiftx+_width, _shifty+_height);
 
     _owidth = _width;
     _oheight = _height;
@@ -174,10 +174,10 @@ void BruteForceResolver::evaluate_solution(const char *solution)
 
     for(int i=0; i < len; i++){
         if(solution[i] == 'F'){
-            int molt = i*_precision_density;
-            int molt2 = _width*_precision_density;
-            int x = ((molt)%(molt2))+_shiftx+_precision_density/2;
-            int y = ((molt)/(molt2)*_precision_density)+_shifty+_precision_density/2;
+            int m = i*_precision_density;
+            int n = _width*_precision_density;
+            int x = ((m)%(n))+_shiftx+_precision_density/2;
+            int y = ((m)/(n)*_precision_density)+_shifty+_precision_density/2;
 
             whs.append(new Warehouse(x, y, 0));
         }

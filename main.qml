@@ -20,7 +20,7 @@ ApplicationWindow {
         onDataAvailable: {
             var ctx = drawingCanvas.getContext("2d");
 
-            var point_color = (algorithm.currentIndex==0)?"blue":"orange";
+            var point_color = (algorithm.currentIndex==0)?"blue":"black";
 
             var c1 = {"x":approxFacade.getX(0), "y":approxFacade.getY(0)};
             var r1 = approxFacade.getR(0);
@@ -89,7 +89,7 @@ ApplicationWindow {
     }
 
     Timer {
-        interval: 1000; running: false; repeat: true
+        interval: 1000; running: true; repeat: true
         onTriggered: {
             var calcpersec = pbar.value - lastVal;
             lastVal = pbar.value;

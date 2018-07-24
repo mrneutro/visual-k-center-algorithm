@@ -34,6 +34,7 @@ private:
     int _center_count = 0;
     QList<Warehouse*> _solution;
     QString _precision;
+    bool _immediately = false;
 signals:
     void dataAvailable();
     void progressUpdate(int val);

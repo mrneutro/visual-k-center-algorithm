@@ -56,6 +56,23 @@ void ResolverFacade::resolveImmediate(QString algo)
             this->_resolver = new BruteForceResolver(this->_cities, this->_center_count);
             ((BruteForceResolver*)this->_resolver)->setPrecision(_precision);
         }
+
+        if(_cities.length() <= _center_count){
+            QList<Warehouse*> whs;
+            for(int i=0; i< _cities.length(); i++){
+                auto c = _cities.at(i);
+                auto wh = new Warehouse(c->x(), c->y(), 1);
+                whs.append(wh);
+            }
+            this->_solution = whs;
+            _immediately = true;
+            emit dataAvailable();
+            return;
+        }else{
+            _immediately = false;
+        }
+
+
         connect(_resolver, SIGNAL(progressUpdate(int)), this, SIGNAL(progressUpdate(int)));
         connect(_resolver, SIGNAL(progressMaxVal(int)), this, SIGNAL(progressMaxVal(int)));
         connect(_resolver, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
@@ -94,7 +111,12 @@ int ResolverFacade::getY(int item)
 
 int ResolverFacade::getR(int item)
 {
-    return _solution.at(item)->radius();
+    if(item < _solution.size()){
+        return _solution.at(item)->radius();
+    }else{
+        qWarning() << "Richiesto punto inesistente";
+        return 0;
+    }
 }
 
 void ResolverFacade::setPrecision(QString precision)
@@ -104,11 +126,17 @@ void ResolverFacade::setPrecision(QString precision)
 
 double ResolverFacade::last_execution_time()
 {
+    if(_immediately){
+        return 0;
+    }
     return this->_resolver->last_execution_time();
 }
 
 int ResolverFacade::solution_quality()
 {
+    if(_immediately){
+        return 0;
+    }
     return this->_resolver->solution_quality();
 }
 
